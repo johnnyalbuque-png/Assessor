@@ -1,0 +1,69 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Categoria {
+  id           String       @id @default(cuid())
+  nome         String
+  slug         String       @unique
+  icone        String?
+  fornecedores Fornecedor[]
+  criadoEm    DateTime     @default(now())
+}
+
+model Fornecedor {
+  id           String    @id @default(cuid())
+  nome         String
+  slug         String    @unique
+  descricao    String    @db.Text
+  logo         String?
+  banner       String?
+  plano        Plano     @default(BASICO)
+  ativo        Boolean   @default(true)
+  recomendado  Boolean   @default(false)
+  categoria    Categoria @relation(fields: [categoriaId], references: [id])
+  categoriaId  String
+  regioes      String[]
+  whatsapp     String?
+  email        String?
+  site         String?
+  video        String?
+  criadoEm    DateTime  @default(now())
+  atualizadoEm DateTime @updatedAt
+}
+
+model Provedor {
+  id        String   @id @default(cuid())
+  nome      String
+  email     String   @unique
+  telefone  String?
+  cidade    String?
+  estado    String?
+  criadoEm DateTime @default(now())
+}
+
+model Solicitacao {
+  id        String            @id @default(cuid())
+  empresa   String
+  email     String
+  telefone  String?
+  mensagem  String?           @db.Text
+  status    StatusSolicitacao @default(PENDENTE)
+  criadoEm DateTime          @default(now())
+}
+
+enum Plano {
+  BASICO
+  DESTAQUE
+  PREMIUM
+}
+
+enum StatusSolicitacao {
+  PENDENTE
+  APROVADO
+  REJEITADO
+}

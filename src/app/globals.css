@@ -1,0 +1,6 @@
+@import "tailwindcss";
+
+:root {
+  --azul: #1B3A6B;
+  --azul-med: #2E86AB;
+}
