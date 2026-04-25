@@ -1,2 +1,4 @@
 .env
-gerar_pdf.py
+.next/
+node_modules/
+next-env.d.ts
