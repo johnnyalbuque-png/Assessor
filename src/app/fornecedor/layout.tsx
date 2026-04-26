@@ -1,10 +1,13 @@
-import { redirect } from "next/navigation";
 import { getContaFromSession } from "@/lib/fornecedor-auth";
 import FornecedorNav from "./FornecedorNav";
 
 export default async function FornecedorLayout({ children }: { children: React.ReactNode }) {
   const conta = await getContaFromSession();
-  if (!conta) redirect("/fornecedor/login");
+
+  if (!conta) {
+    // Login page: render without nav
+    return <>{children}</>;
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
