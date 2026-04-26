@@ -27,6 +27,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
       nome: data.nome,
       descricao: data.descricao || null,
       preco: data.preco || null,
+      imagem: data.imagem || null,
       fornecedorId: id,
       ativo: data.ativo ?? true,
       ordem: data.ordem ?? 0,
