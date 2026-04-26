@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import ImageUpload from "./ImageUpload";
 
 type TipoBanner = "HORIZONTAL_TOPO" | "HORIZONTAL_RODAPE" | "VERTICAL_ESQUERDA" | "VERTICAL_DIREITA";
 
@@ -27,7 +28,7 @@ export default function BannerForm({ inicial }: { inicial?: BannerData }) {
   const [erro, setErro] = useState("");
   const [tipo, setTipo] = useState<TipoBanner>(inicial?.tipo ?? "HORIZONTAL_TOPO");
   const [ativo, setAtivo] = useState(inicial?.ativo ?? true);
-  const [preview, setPreview] = useState(inicial?.imagem ?? "");
+  const [imagem, setImagem] = useState(inicial?.imagem ?? "");
   const editando = !!inicial?.id;
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -37,10 +38,16 @@ export default function BannerForm({ inicial }: { inicial?: BannerData }) {
     const form = e.currentTarget;
     const getValue = (name: string) => (form.elements.namedItem(name) as HTMLInputElement)?.value;
 
+    if (!imagem) {
+      setErro("Selecione ou faça upload de uma imagem.");
+      setLoading(false);
+      return;
+    }
+
     const payload = {
       tipo,
       titulo: getValue("titulo") || null,
-      imagem: getValue("imagem"),
+      imagem,
       link: getValue("link") || null,
       ativo,
       ordem: parseInt(getValue("ordem") || "0", 10),
@@ -104,21 +111,15 @@ export default function BannerForm({ inicial }: { inicial?: BannerData }) {
 
       {/* Imagem */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">URL da imagem *</label>
-        <input
-          name="imagem"
-          defaultValue={inicial?.imagem ?? ""}
-          required
-          className={field}
-          placeholder="https://..."
-          onChange={(e) => setPreview(e.target.value)}
+        <label className="block text-sm font-medium text-gray-700 mb-1.5">Imagem do banner *</label>
+        <ImageUpload
+          value={imagem}
+          onChange={setImagem}
+          tipo="banner"
+          aspect="wide"
+          hint={tipo.startsWith("HORIZONTAL") ? "Recomendado: 970×90 px" : "Recomendado: 160×600 px"}
         />
-        {preview && (
-          <div className="mt-3 border border-gray-200 rounded-lg overflow-hidden max-w-sm">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={preview} alt="Preview" className="w-full object-contain max-h-40" />
-          </div>
-        )}
+        {!imagem && <p className="text-xs text-red-400 mt-1">Obrigatório</p>}
       </div>
 
       {/* Link */}

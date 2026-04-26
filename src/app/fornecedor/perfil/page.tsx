@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import ImageUpload from "@/components/ImageUpload";
 
 type Perfil = {
   nome: string;
@@ -118,14 +119,24 @@ export default function PerfilPage() {
 
         <div className="grid sm:grid-cols-2 gap-5">
           <div>
-            <label className="label">URL do Logo</label>
-            <input className="input" value={field("logo")} onChange={(e) => set("logo", e.target.value)} placeholder="https://..." />
-            {form.logo && <img src={form.logo} alt="logo" className="mt-2 h-16 object-contain rounded border border-gray-100" />}
+            <label className="label">Logo</label>
+            <ImageUpload
+              value={field("logo")}
+              onChange={(url) => set("logo", url)}
+              tipo="logo"
+              aspect="square"
+              hint="Recomendado: 400×400 px"
+            />
           </div>
           <div>
-            <label className="label">URL do Banner</label>
-            <input className="input" value={field("banner")} onChange={(e) => set("banner", e.target.value)} placeholder="https://..." />
-            {form.banner && <img src={form.banner} alt="banner" className="mt-2 h-16 w-full object-cover rounded border border-gray-100" />}
+            <label className="label">Banner (capa do perfil)</label>
+            <ImageUpload
+              value={field("banner")}
+              onChange={(url) => set("banner", url)}
+              tipo="banner"
+              aspect="wide"
+              hint="Recomendado: 1200×400 px"
+            />
           </div>
         </div>
 

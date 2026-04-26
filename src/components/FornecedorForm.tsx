@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import ImageUpload from "./ImageUpload";
 
 type Categoria = { id: string; nome: string };
 
@@ -139,48 +140,28 @@ export default function FornecedorForm({
         />
       </div>
 
-      {/* Logo */}
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">URL do logo</label>
-        <div className="flex gap-3 items-start">
-          <input
+      {/* Logo + Banner */}
+      <div className="grid sm:grid-cols-2 gap-5">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1.5">Logo</label>
+          <ImageUpload
             value={logoUrl}
-            onChange={(e) => setLogoUrl(e.target.value)}
-            placeholder="https://..."
-            className={`${field} flex-1`}
+            onChange={setLogoUrl}
+            tipo="logo"
+            aspect="square"
+            hint="Recomendado: 400×400 px"
           />
-          {logoUrl && (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={logoUrl}
-              alt="Preview logo"
-              className="w-12 h-12 rounded-lg object-contain border border-gray-100 bg-gray-50 shrink-0"
-              onError={(e) => (e.currentTarget.style.display = "none")}
-            />
-          )}
         </div>
-        <p className="text-xs text-gray-400 mt-1">Cole a URL direta da imagem (PNG, JPG, SVG)</p>
-      </div>
-
-      {/* Banner */}
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">URL do banner (imagem de capa)</label>
-        <input
-          value={bannerUrl}
-          onChange={(e) => setBannerUrl(e.target.value)}
-          placeholder="https://..."
-          className={field}
-        />
-        {bannerUrl && (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={bannerUrl}
-            alt="Preview banner"
-            className="mt-2 w-full h-24 rounded-lg object-cover border border-gray-100"
-            onError={(e) => (e.currentTarget.style.display = "none")}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1.5">Banner (imagem de capa)</label>
+          <ImageUpload
+            value={bannerUrl}
+            onChange={setBannerUrl}
+            tipo="banner"
+            aspect="wide"
+            hint="Recomendado: 1200×400 px"
           />
-        )}
-        <p className="text-xs text-gray-400 mt-1">Imagem de capa exibida no topo do perfil (recomendado: 1200×400)</p>
+        </div>
       </div>
 
       <div className="grid sm:grid-cols-2 gap-5">
