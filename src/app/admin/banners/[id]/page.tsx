@@ -3,6 +3,8 @@ import { prisma } from "@/lib/prisma";
 import BannerForm from "@/components/BannerForm";
 import DeleteBannerBtn from "./DeleteBannerBtn";
 
+export const dynamic = "force-dynamic";
+
 export default async function EditarBanner({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const banner = await prisma.banner.findUnique({ where: { id } });

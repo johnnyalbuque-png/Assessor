@@ -4,6 +4,8 @@ import { prisma } from "@/lib/prisma";
 import PromocaoForm from "./PromocaoForm";
 import DeleteBtn from "./DeleteBtn";
 
+export const dynamic = "force-dynamic";
+
 export default async function AdminPromocoes({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
 

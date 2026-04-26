@@ -2,6 +2,8 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import CategoriaForm from "@/components/CategoriaForm";
 
+export const dynamic = "force-dynamic";
+
 export default async function EditarCategoriaPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const categoria = await prisma.categoria.findUnique({ where: { id } });
