@@ -16,17 +16,17 @@ model Categoria {
 }
 
 model Fornecedor {
-  id           String      @id @default(cuid())
+  id           String           @id @default(cuid())
   nome         String
-  slug         String      @unique
+  slug         String           @unique
   tagline      String?
-  descricao    String      @db.Text
+  descricao    String           @db.Text
   logo         String?
   banner       String?
-  plano        Plano       @default(BASICO)
-  ativo        Boolean     @default(true)
-  recomendado  Boolean     @default(false)
-  categoria    Categoria   @relation(fields: [categoriaId], references: [id])
+  plano        Plano            @default(BASICO)
+  ativo        Boolean          @default(true)
+  recomendado  Boolean          @default(false)
+  categoria    Categoria        @relation(fields: [categoriaId], references: [id])
   categoriaId  String
   regioes      String[]
   whatsapp     String?
@@ -35,8 +35,30 @@ model Fornecedor {
   video        String?
   produtos     Produto[]
   promocoes    Promocao[]
-  criadoEm    DateTime    @default(now())
-  atualizadoEm DateTime   @updatedAt
+  conta        ContaFornecedor?
+  leads        LeadClick[]
+  criadoEm    DateTime         @default(now())
+  atualizadoEm DateTime        @updatedAt
+}
+
+model ContaFornecedor {
+  id           String     @id @default(cuid())
+  fornecedorId String     @unique
+  fornecedor   Fornecedor @relation(fields: [fornecedorId], references: [id], onDelete: Cascade)
+  email        String     @unique
+  senhaHash    String
+  sessionToken String?    @unique
+  criadoEm    DateTime   @default(now())
+}
+
+model LeadClick {
+  id           String     @id @default(cuid())
+  fornecedorId String
+  fornecedor   Fornecedor @relation(fields: [fornecedorId], references: [id], onDelete: Cascade)
+  tipo         TipoLead
+  criadoEm    DateTime   @default(now())
+
+  @@index([fornecedorId, criadoEm])
 }
 
 model Produto {
@@ -121,6 +143,12 @@ enum TipoBanner {
   HORIZONTAL_RODAPE
   VERTICAL_ESQUERDA
   VERTICAL_DIREITA
+}
+
+enum TipoLead {
+  WHATSAPP
+  EMAIL
+  SITE
 }
 
 enum StatusSolicitacao {

@@ -13,6 +13,7 @@ export async function POST() {
     `DO $$ BEGIN CREATE TYPE "Plano" AS ENUM ('BASICO', 'DESTAQUE', 'PREMIUM'); EXCEPTION WHEN duplicate_object THEN null; END $$`,
     `DO $$ BEGIN CREATE TYPE "StatusSolicitacao" AS ENUM ('PENDENTE', 'APROVADO', 'REJEITADO'); EXCEPTION WHEN duplicate_object THEN null; END $$`,
     `DO $$ BEGIN CREATE TYPE "TipoBanner" AS ENUM ('HORIZONTAL_TOPO', 'HORIZONTAL_RODAPE', 'VERTICAL_ESQUERDA', 'VERTICAL_DIREITA'); EXCEPTION WHEN duplicate_object THEN null; END $$`,
+    `DO $$ BEGIN CREATE TYPE "TipoLead" AS ENUM ('WHATSAPP', 'EMAIL', 'SITE'); EXCEPTION WHEN duplicate_object THEN null; END $$`,
   ]) {
     await prisma.$executeRawUnsafe(sql);
   }
@@ -131,6 +132,40 @@ export async function POST() {
       "criadoEm" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
       CONSTRAINT "Solicitacao_pkey" PRIMARY KEY ("id")
     )
+  `);
+
+  // ContaFornecedor
+  await prisma.$executeRawUnsafe(`
+    CREATE TABLE IF NOT EXISTS "ContaFornecedor" (
+      "id" TEXT NOT NULL, "fornecedorId" TEXT NOT NULL,
+      "email" TEXT NOT NULL, "senhaHash" TEXT NOT NULL,
+      "sessionToken" TEXT, "criadoEm" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      CONSTRAINT "ContaFornecedor_pkey" PRIMARY KEY ("id")
+    )
+  `);
+  await prisma.$executeRawUnsafe(`CREATE UNIQUE INDEX IF NOT EXISTS "ContaFornecedor_fornecedorId_key" ON "ContaFornecedor"("fornecedorId")`);
+  await prisma.$executeRawUnsafe(`CREATE UNIQUE INDEX IF NOT EXISTS "ContaFornecedor_email_key" ON "ContaFornecedor"("email")`);
+  await prisma.$executeRawUnsafe(`CREATE UNIQUE INDEX IF NOT EXISTS "ContaFornecedor_sessionToken_key" ON "ContaFornecedor"("sessionToken")`);
+  await prisma.$executeRawUnsafe(`
+    DO $$ BEGIN ALTER TABLE "ContaFornecedor" ADD CONSTRAINT "ContaFornecedor_fornecedorId_fkey"
+    FOREIGN KEY ("fornecedorId") REFERENCES "Fornecedor"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+    EXCEPTION WHEN duplicate_object THEN null; END $$
+  `);
+
+  // LeadClick
+  await prisma.$executeRawUnsafe(`
+    CREATE TABLE IF NOT EXISTS "LeadClick" (
+      "id" TEXT NOT NULL, "fornecedorId" TEXT NOT NULL,
+      "tipo" "TipoLead" NOT NULL,
+      "criadoEm" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      CONSTRAINT "LeadClick_pkey" PRIMARY KEY ("id")
+    )
+  `);
+  await prisma.$executeRawUnsafe(`CREATE INDEX IF NOT EXISTS "LeadClick_fornecedorId_criadoEm_idx" ON "LeadClick"("fornecedorId","criadoEm")`);
+  await prisma.$executeRawUnsafe(`
+    DO $$ BEGIN ALTER TABLE "LeadClick" ADD CONSTRAINT "LeadClick_fornecedorId_fkey"
+    FOREIGN KEY ("fornecedorId") REFERENCES "Fornecedor"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+    EXCEPTION WHEN duplicate_object THEN null; END $$
   `);
 
   // Prisma migrations table
