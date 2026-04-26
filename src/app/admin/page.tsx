@@ -2,6 +2,7 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import SeedButton from "./SeedButton";
 import SetupDbButton from "./SetupDbButton";
+import AnalyticsWidget from "./AnalyticsWidget";
 
 async function getStats() {
   try {
@@ -91,6 +92,8 @@ export default async function AdminDashboard() {
           </Link>
         </div>
       </div>
+
+      <AnalyticsWidget />
 
       {totalCategorias === 0 && (
         <div className="bg-amber-50 border border-amber-200 rounded-xl p-6">

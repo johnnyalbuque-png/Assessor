@@ -8,8 +8,10 @@ type FornecedorData = {
   id?: string;
   nome?: string;
   slug?: string;
+  tagline?: string | null;
   descricao?: string;
   logo?: string | null;
+  banner?: string | null;
   plano?: string;
   ativo?: boolean;
   recomendado?: boolean;
@@ -46,6 +48,7 @@ export default function FornecedorForm({
   const [slugValue, setSlugValue] = useState(inicial?.slug ?? "");
   const [slugManual, setSlugManual] = useState(!!inicial?.id);
   const [logoUrl, setLogoUrl] = useState(inicial?.logo ?? "");
+  const [bannerUrl, setBannerUrl] = useState(inicial?.banner ?? "");
   const editando = !!inicial?.id;
 
   function toggleRegiao(r: string) {
@@ -62,8 +65,10 @@ export default function FornecedorForm({
     const payload = {
       nome: getValue("nome"),
       slug: slugValue,
+      tagline: getValue("tagline") || null,
       descricao: getValue("descricao"),
       logo: logoUrl || null,
+      banner: bannerUrl || null,
       plano: getValue("plano"),
       ativo: getChecked("ativo"),
       recomendado: getChecked("recomendado"),
@@ -118,6 +123,12 @@ export default function FornecedorForm({
       </div>
 
       <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">Tagline (slogan)</label>
+        <input name="tagline" defaultValue={inicial?.tagline ?? ""} placeholder="Ex: Líder em OLTs para provedores" className={field} />
+        <p className="text-xs text-gray-400 mt-1">Frase curta exibida abaixo do nome no perfil</p>
+      </div>
+
+      <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">Descrição *</label>
         <textarea
           name="descricao"
@@ -149,6 +160,27 @@ export default function FornecedorForm({
           )}
         </div>
         <p className="text-xs text-gray-400 mt-1">Cole a URL direta da imagem (PNG, JPG, SVG)</p>
+      </div>
+
+      {/* Banner */}
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">URL do banner (imagem de capa)</label>
+        <input
+          value={bannerUrl}
+          onChange={(e) => setBannerUrl(e.target.value)}
+          placeholder="https://..."
+          className={field}
+        />
+        {bannerUrl && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={bannerUrl}
+            alt="Preview banner"
+            className="mt-2 w-full h-24 rounded-lg object-cover border border-gray-100"
+            onError={(e) => (e.currentTarget.style.display = "none")}
+          />
+        )}
+        <p className="text-xs text-gray-400 mt-1">Imagem de capa exibida no topo do perfil (recomendado: 1200×400)</p>
       </div>
 
       <div className="grid sm:grid-cols-2 gap-5">

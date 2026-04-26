@@ -16,24 +16,78 @@ model Categoria {
 }
 
 model Fornecedor {
-  id           String    @id @default(cuid())
+  id           String      @id @default(cuid())
   nome         String
-  slug         String    @unique
-  descricao    String    @db.Text
+  slug         String      @unique
+  tagline      String?
+  descricao    String      @db.Text
   logo         String?
   banner       String?
-  plano        Plano     @default(BASICO)
-  ativo        Boolean   @default(true)
-  recomendado  Boolean   @default(false)
-  categoria    Categoria @relation(fields: [categoriaId], references: [id])
+  plano        Plano       @default(BASICO)
+  ativo        Boolean     @default(true)
+  recomendado  Boolean     @default(false)
+  categoria    Categoria   @relation(fields: [categoriaId], references: [id])
   categoriaId  String
   regioes      String[]
   whatsapp     String?
   email        String?
   site         String?
   video        String?
-  criadoEm    DateTime  @default(now())
+  produtos     Produto[]
+  promocoes    Promocao[]
+  criadoEm    DateTime    @default(now())
+  atualizadoEm DateTime   @updatedAt
+}
+
+model Produto {
+  id           String     @id @default(cuid())
+  nome         String
+  descricao    String?    @db.Text
+  preco        String?
+  fornecedor   Fornecedor @relation(fields: [fornecedorId], references: [id], onDelete: Cascade)
+  fornecedorId String
+  ativo        Boolean    @default(true)
+  ordem        Int        @default(0)
+  criadoEm    DateTime   @default(now())
+}
+
+model Promocao {
+  id           String     @id @default(cuid())
+  titulo       String
+  descricao    String     @db.Text
+  validade     DateTime?
+  fornecedor   Fornecedor @relation(fields: [fornecedorId], references: [id], onDelete: Cascade)
+  fornecedorId String
+  ativo        Boolean    @default(true)
+  criadoEm    DateTime   @default(now())
+}
+
+model Banner {
+  id       String     @id @default(cuid())
+  tipo     TipoBanner
+  titulo   String?
+  imagem   String
+  link     String?
+  ativo    Boolean    @default(true)
+  ordem    Int        @default(0)
+  criadoEm DateTime  @default(now())
+}
+
+model Pageview {
+  id       String   @id @default(cuid())
+  path     String
+  criadoEm DateTime @default(now())
+
+  @@index([criadoEm])
+}
+
+model VisitaAtiva {
+  id           String   @id @default(cuid())
+  sessionId    String   @unique
+  path         String
   atualizadoEm DateTime @updatedAt
+
+  @@index([atualizadoEm])
 }
 
 model Provedor {
@@ -60,6 +114,13 @@ enum Plano {
   BASICO
   DESTAQUE
   PREMIUM
+}
+
+enum TipoBanner {
+  HORIZONTAL_TOPO
+  HORIZONTAL_RODAPE
+  VERTICAL_ESQUERDA
+  VERTICAL_DIREITA
 }
 
 enum StatusSolicitacao {

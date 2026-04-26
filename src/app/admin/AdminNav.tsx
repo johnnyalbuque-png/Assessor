@@ -7,6 +7,7 @@ const NAV_ITEMS = [
   { href: "/admin/fornecedores", label: "Fornecedores", icon: "🏢" },
   { href: "/admin/fornecedores/novo", label: "Novo fornecedor", icon: "➕" },
   { href: "/admin/categorias", label: "Categorias", icon: "🗂️" },
+  { href: "/admin/banners", label: "Banners", icon: "🖼️" },
   { href: "/admin/solicitacoes", label: "Solicitações", icon: "📬" },
   { href: "/admin/provedores", label: "Provedores", icon: "📡" },
 ];
@@ -33,7 +34,7 @@ export default function AdminNav({ children }: { children: React.ReactNode }) {
               key={item.href}
               href={item.href}
               className={`flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm transition-colors ${
-                pathname === item.href
+                pathname === item.href || (item.href !== "/admin" && pathname.startsWith(item.href))
                   ? "bg-white/20 text-white"
                   : "text-white/80 hover:bg-white/10 hover:text-white"
               }`}
