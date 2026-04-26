@@ -27,6 +27,7 @@ function slugify(text: string) {
 export default function CategoriaForm({ inicial }: { inicial?: CategoriaData }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [erro, setErro] = useState("");
   const [slugValue, setSlugValue] = useState(inicial?.slug ?? "");
   const [slugManual, setSlugManual] = useState(!!inicial?.id);
   const [icone, setIcone] = useState(inicial?.icone ?? "🏢");
@@ -35,16 +36,29 @@ export default function CategoriaForm({ inicial }: { inicial?: CategoriaData }) 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setLoading(true);
+    setErro("");
     const form = e.currentTarget;
     const nome = (form.elements.namedItem("nome") as HTMLInputElement).value;
 
     const url = editando ? `/api/admin/categorias/${inicial!.id}` : "/api/admin/categorias";
     const method = editando ? "PUT" : "POST";
-    await fetch(url, {
-      method,
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ nome, slug: slugValue, icone }),
-    });
+    try {
+      const res = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ nome, slug: slugValue, icone }),
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        setErro(data.error || "Erro ao salvar categoria");
+        setLoading(false);
+        return;
+      }
+    } catch {
+      setErro("Erro de conexão. Verifique sua internet.");
+      setLoading(false);
+      return;
+    }
     router.push("/admin/categorias");
     router.refresh();
   }
@@ -109,6 +123,12 @@ export default function CategoriaForm({ inicial }: { inicial?: CategoriaData }) 
           />
         </div>
       </div>
+
+      {erro && (
+        <div className="bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-lg">
+          {erro}
+        </div>
+      )}
 
       <div className="flex gap-3 pt-2">
         <button

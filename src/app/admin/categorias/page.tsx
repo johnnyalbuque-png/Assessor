@@ -3,10 +3,17 @@ import { prisma } from "@/lib/prisma";
 import DeleteCategoriaBtn from "./[id]/DeleteCategoriaBtn";
 
 export default async function AdminCategorias() {
-  const categorias = await prisma.categoria.findMany({
-    include: { _count: { select: { fornecedores: true } } },
-    orderBy: { nome: "asc" },
-  });
+  let categorias: { id: string; icone: string | null; nome: string; slug: string; _count: { fornecedores: number } }[] = [];
+  let dbError = false;
+
+  try {
+    categorias = await prisma.categoria.findMany({
+      include: { _count: { select: { fornecedores: true } } },
+      orderBy: { nome: "asc" },
+    });
+  } catch {
+    dbError = true;
+  }
 
   return (
     <div>
@@ -19,6 +26,16 @@ export default async function AdminCategorias() {
           + Nova categoria
         </Link>
       </div>
+
+      {dbError && (
+        <div className="bg-red-50 border border-red-200 rounded-xl p-6 mb-6">
+          <p className="text-red-700 text-sm">
+            Erro ao conectar ao banco de dados. Volte ao{" "}
+            <Link href="/admin" className="underline font-medium">Dashboard</Link>{" "}
+            e clique em &quot;Criar tabelas no banco&quot; para configurar o banco.
+          </p>
+        </div>
+      )}
 
       <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
         <table className="w-full text-sm">
@@ -53,7 +70,7 @@ export default async function AdminCategorias() {
             ))}
           </tbody>
         </table>
-        {categorias.length === 0 && (
+        {!dbError && categorias.length === 0 && (
           <div className="py-12 text-center text-gray-400">Nenhuma categoria cadastrada.</div>
         )}
       </div>
