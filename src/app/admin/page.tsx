@@ -4,6 +4,8 @@ import SeedButton from "./SeedButton";
 import SetupDbButton from "./SetupDbButton";
 import AnalyticsWidget from "./AnalyticsWidget";
 
+export const dynamic = "force-dynamic";
+
 async function getStats() {
   try {
     const [totalFornecedores, ativos, solicitacoesPendentes, totalProvedores, totalCategorias] =

@@ -2,6 +2,8 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import DeleteCategoriaBtn from "./[id]/DeleteCategoriaBtn";
 
+export const dynamic = "force-dynamic";
+
 export default async function AdminCategorias() {
   let categorias: { id: string; icone: string | null; nome: string; slug: string; _count: { fornecedores: number } }[] = [];
   let dbError = false;

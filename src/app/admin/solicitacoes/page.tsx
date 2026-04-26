@@ -1,6 +1,8 @@
 import { prisma } from "@/lib/prisma";
 import AprovarBtn from "./AprovarBtn";
 
+export const dynamic = "force-dynamic";
+
 const STATUS_COLOR: Record<string, string> = {
   PENDENTE: "bg-amber-100 text-amber-700",
   APROVADO: "bg-green-100 text-green-700",

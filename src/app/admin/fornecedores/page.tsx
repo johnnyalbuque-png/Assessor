@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 
+export const dynamic = "force-dynamic";
+
 const PLANO_COLOR: Record<string, string> = {
   BASICO: "bg-gray-100 text-gray-600",
   DESTAQUE: "bg-blue-100 text-blue-700",

@@ -2,6 +2,8 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import DeleteBannerBtn from "./[id]/DeleteBannerBtn";
 
+export const dynamic = "force-dynamic";
+
 const TIPO_LABEL: Record<string, string> = {
   HORIZONTAL_TOPO: "Horizontal Topo",
   HORIZONTAL_RODAPE: "Horizontal Rodapé",

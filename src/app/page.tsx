@@ -28,9 +28,9 @@ function BannerImg({ b }: { b: Banner }) {
   return img;
 }
 
-export default async function Home() {
-  const [categorias, totalFornecedores, destaques, bannersHTop, bannersHRod, bannersVEsq, bannersVDir] =
-    await Promise.all([
+async function getCoreData() {
+  try {
+    const [categorias, totalFornecedores, destaques] = await Promise.all([
       prisma.categoria.findMany({
         include: { _count: { select: { fornecedores: true } } },
         orderBy: { nome: "asc" },
@@ -41,6 +41,17 @@ export default async function Home() {
         include: { categoria: true },
         take: 3,
       }),
+    ]);
+    return { categorias, totalFornecedores, destaques };
+  } catch {
+    return { categorias: [], totalFornecedores: 0, destaques: [] };
+  }
+}
+
+export default async function Home() {
+  const [{ categorias, totalFornecedores, destaques }, bannersHTop, bannersHRod, bannersVEsq, bannersVDir] =
+    await Promise.all([
+      getCoreData(),
       getBanners("HORIZONTAL_TOPO"),
       getBanners("HORIZONTAL_RODAPE"),
       getBanners("VERTICAL_ESQUERDA"),

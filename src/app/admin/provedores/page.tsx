@@ -1,5 +1,7 @@
 import { prisma } from "@/lib/prisma";
 
+export const dynamic = "force-dynamic";
+
 export default async function AdminProvedores() {
   const provedores = await prisma.provedor.findMany({ orderBy: { criadoEm: "desc" } });
 
