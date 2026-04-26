@@ -98,7 +98,7 @@ export default async function AdminDashboard() {
       <AnalyticsWidget />
 
       {totalCategorias === 0 && (
-        <div className="bg-amber-50 border border-amber-200 rounded-xl p-6">
+        <div className="bg-amber-50 border border-amber-200 rounded-xl p-6 mt-6">
           <h2 className="font-semibold text-amber-800 mb-1">Banco de dados vazio</h2>
           <p className="text-amber-700 text-sm mb-4">
             Clique no botão abaixo para criar as 10 categorias e 2 fornecedores de exemplo.
@@ -107,6 +107,16 @@ export default async function AdminDashboard() {
           <SeedButton />
         </div>
       )}
+
+      {/* Manutenção — sempre visível */}
+      <div className="bg-white rounded-xl border border-gray-100 p-6 mt-6">
+        <h2 className="font-semibold text-gray-800 mb-1">Manutenção do banco</h2>
+        <p className="text-gray-500 text-sm mb-4">
+          Execute sempre que uma atualização do sistema adicionar novas tabelas ou colunas.
+          É seguro rodar múltiplas vezes — não apaga dados existentes.
+        </p>
+        <SetupDbButton />
+      </div>
     </div>
   );
 }

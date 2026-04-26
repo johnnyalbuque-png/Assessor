@@ -9,25 +9,33 @@ async function isAdmin() {
 
 export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   if (!(await isAdmin())) return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
-  const { id } = await params;
-  const data = await req.json();
-  const banner = await prisma.banner.update({
-    where: { id },
-    data: {
-      tipo: data.tipo,
-      titulo: data.titulo || null,
-      imagem: data.imagem,
-      link: data.link || null,
-      ativo: data.ativo ?? true,
-      ordem: data.ordem ?? 0,
-    },
-  });
-  return NextResponse.json(banner);
+  try {
+    const { id } = await params;
+    const data = await req.json();
+    const banner = await prisma.banner.update({
+      where: { id },
+      data: {
+        tipo: data.tipo,
+        titulo: data.titulo || null,
+        imagem: data.imagem,
+        link: data.link || null,
+        ativo: data.ativo ?? true,
+        ordem: data.ordem ?? 0,
+      },
+    });
+    return NextResponse.json(banner);
+  } catch {
+    return NextResponse.json({ error: "Erro ao atualizar banner" }, { status: 500 });
+  }
 }
 
 export async function DELETE(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   if (!(await isAdmin())) return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
-  const { id } = await params;
-  await prisma.banner.delete({ where: { id } });
-  return NextResponse.json({ ok: true });
+  try {
+    const { id } = await params;
+    await prisma.banner.delete({ where: { id } });
+    return NextResponse.json({ ok: true });
+  } catch {
+    return NextResponse.json({ error: "Erro ao excluir banner" }, { status: 500 });
+  }
 }

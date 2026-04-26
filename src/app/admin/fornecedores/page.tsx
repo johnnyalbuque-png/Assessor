@@ -10,10 +10,17 @@ const PLANO_COLOR: Record<string, string> = {
 };
 
 export default async function AdminFornecedores() {
-  const fornecedores = await prisma.fornecedor.findMany({
-    include: { categoria: true },
-    orderBy: [{ plano: "desc" }, { nome: "asc" }],
-  });
+  let fornecedores: { id: string; nome: string; recomendado: boolean; plano: string; ativo: boolean; categoria: { nome: string } }[] = [];
+  let dbError = false;
+
+  try {
+    fornecedores = await prisma.fornecedor.findMany({
+      include: { categoria: true },
+      orderBy: [{ plano: "desc" }, { nome: "asc" }],
+    });
+  } catch {
+    dbError = true;
+  }
 
   return (
     <div>
@@ -23,6 +30,13 @@ export default async function AdminFornecedores() {
           + Novo fornecedor
         </Link>
       </div>
+
+      {dbError && (
+        <div className="bg-red-50 border border-red-200 rounded-xl p-5 mb-6 text-sm text-red-700">
+          Erro ao carregar dados — o banco pode precisar de atualização.{" "}
+          <Link href="/admin" className="underline font-medium">Ir ao Dashboard → Manutenção do banco</Link>
+        </div>
+      )}
 
       <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
         <table className="w-full text-sm">
