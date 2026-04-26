@@ -129,9 +129,9 @@ export default async function Home() {
         <div className={`max-w-7xl mx-auto px-4 ${hasVertical ? "flex gap-6 items-start" : ""}`}>
           {/* Sidebar esquerda */}
           {bannersVEsq.length > 0 && (
-            <aside className="hidden xl:flex flex-col gap-4 pt-16 w-40 shrink-0">
+            <aside className="hidden xl:flex flex-col gap-4 pt-16 w-52 shrink-0">
               {bannersVEsq.map((b) => (
-                <div key={b.id} className="w-40 overflow-hidden rounded-lg">
+                <div key={b.id} className="w-52 overflow-hidden rounded-lg">
                   <BannerImg b={b} />
                 </div>
               ))}
@@ -167,12 +167,12 @@ export default async function Home() {
               <section className="py-16 bg-white -mx-4 px-4">
                 <div className="max-w-6xl mx-auto">
                   <div className="flex items-center gap-3 mb-2">
-                    <h2 className="text-2xl font-bold text-[#1B3A6B]">Recomendados por Johnny</h2>
+                    <h2 className="text-2xl font-bold text-[#1B3A6B]">Recomendados pela INTER&apos;ISP</h2>
                     <span className="bg-[#2E86AB] text-white text-xs px-2.5 py-1 rounded-full font-medium">
                       ✓ Curadoria INTER&apos;ISP
                     </span>
                   </div>
-                  <p className="text-gray-500 mb-8">Empresas que conheço pessoalmente e indico</p>
+                  <p className="text-gray-500 mb-8">Empresas verificadas e indicadas pela nossa curadoria</p>
                   <div className="grid md:grid-cols-3 gap-6">
                     {destaques.map((f) => (
                       <Link
@@ -217,9 +217,9 @@ export default async function Home() {
 
           {/* Sidebar direita */}
           {bannersVDir.length > 0 && (
-            <aside className="hidden xl:flex flex-col gap-4 pt-16 w-40 shrink-0">
+            <aside className="hidden xl:flex flex-col gap-4 pt-16 w-52 shrink-0">
               {bannersVDir.map((b) => (
-                <div key={b.id} className="w-40 overflow-hidden rounded-lg">
+                <div key={b.id} className="w-52 overflow-hidden rounded-lg">
                   <BannerImg b={b} />
                 </div>
               ))}

@@ -7,7 +7,7 @@ export default function Footer() {
         </p>
         <p className="text-white/50">
           Criado por{" "}
-          <span className="text-[#2E86AB] font-medium">Johnny · INTER&apos;ISP</span>
+          <span className="text-[#2E86AB] font-medium">INTER&apos;ISP</span>
         </p>
       </div>
     </footer>

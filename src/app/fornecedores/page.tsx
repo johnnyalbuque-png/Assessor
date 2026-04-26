@@ -193,7 +193,7 @@ export default async function Fornecedores({
                           {PLANO_LABEL[f.plano]}
                         </span>
                         {f.recomendado && (
-                          <span className="text-xs text-[#2E86AB] font-semibold">★ Recomendado por Johnny</span>
+                          <span className="text-xs text-[#2E86AB] font-semibold">★ Recomendado pela INTER&apos;ISP</span>
                         )}
                       </div>
                       <h3 className="font-bold text-gray-900 text-lg group-hover:text-[#1B3A6B] mb-1">
