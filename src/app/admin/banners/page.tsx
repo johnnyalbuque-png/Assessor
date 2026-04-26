@@ -5,6 +5,7 @@ import DeleteBannerBtn from "./[id]/DeleteBannerBtn";
 export const dynamic = "force-dynamic";
 
 const TIPO_LABEL: Record<string, string> = {
+  HERO: "Hero (tela cheia)",
   HORIZONTAL_TOPO: "Horizontal Topo",
   HORIZONTAL_RODAPE: "Horizontal Rodapé",
   VERTICAL_ESQUERDA: "Vertical Esquerda",

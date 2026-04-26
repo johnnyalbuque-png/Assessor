@@ -8,6 +8,7 @@ const NAV_ITEMS = [
   { href: "/admin/fornecedores/novo", label: "Novo fornecedor", icon: "➕" },
   { href: "/admin/categorias", label: "Categorias", icon: "🗂️" },
   { href: "/admin/banners", label: "Banners", icon: "🖼️" },
+  { href: "/admin/hero", label: "Configurar Hero", icon: "🎯" },
   { href: "/admin/solicitacoes", label: "Solicitações", icon: "📬" },
   { href: "/admin/provedores", label: "Provedores", icon: "📡" },
 ];

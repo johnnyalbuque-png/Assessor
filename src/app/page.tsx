@@ -2,6 +2,8 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import HeroCarousel from "@/components/HeroCarousel";
+import { getConfigSite } from "@/lib/config-site";
 
 export const revalidate = 60;
 
@@ -49,43 +51,66 @@ async function getCoreData() {
 }
 
 export default async function Home() {
-  const [{ categorias, totalFornecedores, destaques }, bannersHTop, bannersHRod, bannersVEsq, bannersVDir] =
+  const [{ categorias, totalFornecedores, destaques }, config, bannersHTop, bannersHRod, bannersVEsq, bannersVDir, bannersHero] =
     await Promise.all([
       getCoreData(),
+      getConfigSite(),
       getBanners("HORIZONTAL_TOPO"),
       getBanners("HORIZONTAL_RODAPE"),
       getBanners("VERTICAL_ESQUERDA"),
       getBanners("VERTICAL_DIREITA"),
+      getBanners("HERO"),
     ]);
 
   const hasVertical = bannersVEsq.length > 0 || bannersVDir.length > 0;
+  const heroBanner = config.hero_modo === "banner" && bannersHero.length > 0;
+  const showBtnFornecedores = config.hero_btn_fornecedores !== "0";
+  const showBtnAnunciar = config.hero_btn_anunciar !== "0";
 
   return (
     <>
       <Header />
       <main className="flex-1">
         {/* Hero */}
-        <section className="bg-[#1B3A6B] text-white py-20 px-4">
-          <div className="max-w-4xl mx-auto text-center">
-            <div className="inline-block bg-[#2E86AB]/20 text-[#7ec8e3] text-sm font-medium px-4 py-1.5 rounded-full mb-6">
-              Curadoria de quem esteve em +200 eventos ISP
+        {heroBanner ? (
+          <HeroCarousel banners={bannersHero} />
+        ) : (
+          <section className="bg-[#1B3A6B] text-white py-20 px-4">
+            <div className="max-w-4xl mx-auto text-center">
+              {config.hero_badge && (
+                <div className="inline-block bg-[#2E86AB]/20 text-[#7ec8e3] text-sm font-medium px-4 py-1.5 rounded-full mb-6">
+                  {config.hero_badge}
+                </div>
+              )}
+              <h1 className="text-4xl md:text-5xl font-bold leading-tight mb-6">
+                {config.hero_titulo}
+              </h1>
+              <p className="text-white/70 text-lg mb-10 max-w-2xl mx-auto">
+                {totalFornecedores} {config.hero_descricao}
+              </p>
+              {(showBtnFornecedores || showBtnAnunciar) && (
+                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                  {showBtnFornecedores && (
+                    <Link
+                      href="/fornecedores"
+                      className="bg-[#2E86AB] hover:bg-[#1d6a8a] px-8 py-3 rounded-lg font-semibold transition-colors"
+                    >
+                      Ver todos os fornecedores
+                    </Link>
+                  )}
+                  {showBtnAnunciar && (
+                    <Link
+                      href="/cadastro"
+                      className="border border-white/30 hover:bg-white/10 px-8 py-3 rounded-lg font-semibold transition-colors"
+                    >
+                      Quero anunciar minha empresa
+                    </Link>
+                  )}
+                </div>
+              )}
             </div>
-            <h1 className="text-4xl md:text-5xl font-bold leading-tight mb-6">
-              Encontre o fornecedor certo para o seu provedor de internet
-            </h1>
-            <p className="text-white/70 text-lg mb-10 max-w-2xl mx-auto">
-              {totalFornecedores} fornecedor{totalFornecedores !== 1 ? "es" : ""} verificados, organizados por categoria. Sem indicação aleatória — apenas empresas que passaram pela curadoria da INTER&apos;ISP.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/fornecedores" className="bg-[#2E86AB] hover:bg-[#1d6a8a] px-8 py-3 rounded-lg font-semibold transition-colors">
-                Ver todos os fornecedores
-              </Link>
-              <Link href="/cadastro" className="border border-white/30 hover:bg-white/10 px-8 py-3 rounded-lg font-semibold transition-colors">
-                Quero anunciar minha empresa
-              </Link>
-            </div>
-          </div>
-        </section>
+          </section>
+        )}
 
         {/* Banner horizontal topo */}
         {bannersHTop.length > 0 && (

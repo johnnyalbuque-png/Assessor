@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import ImageUpload from "./ImageUpload";
 
-type TipoBanner = "HORIZONTAL_TOPO" | "HORIZONTAL_RODAPE" | "VERTICAL_ESQUERDA" | "VERTICAL_DIREITA";
+type TipoBanner = "HORIZONTAL_TOPO" | "HORIZONTAL_RODAPE" | "VERTICAL_ESQUERDA" | "VERTICAL_DIREITA" | "HERO";
 
 type BannerData = {
   id?: string;
@@ -16,6 +16,7 @@ type BannerData = {
 };
 
 const TIPOS: { value: TipoBanner; label: string; desc: string }[] = [
+  { value: "HERO", label: "Hero (tela cheia)", desc: "Ocupa toda a área principal da home — maior visibilidade (ex: 1920×380)" },
   { value: "HORIZONTAL_TOPO", label: "Horizontal — Topo", desc: "Faixa larga abaixo do cabeçalho (ex: 970×90)" },
   { value: "HORIZONTAL_RODAPE", label: "Horizontal — Rodapé", desc: "Faixa larga acima do rodapé (ex: 970×90)" },
   { value: "VERTICAL_ESQUERDA", label: "Vertical — Esquerda", desc: "Banner lateral esquerdo (ex: 160×600)" },
@@ -117,7 +118,13 @@ export default function BannerForm({ inicial }: { inicial?: BannerData }) {
           onChange={setImagem}
           tipo="banner"
           aspect="wide"
-          hint={tipo.startsWith("HORIZONTAL") ? "Recomendado: 970×90 px" : "Recomendado: 160×600 px"}
+          hint={
+            tipo === "HERO"
+              ? "Recomendado: 1920×380 px"
+              : tipo.startsWith("HORIZONTAL")
+              ? "Recomendado: 970×90 px"
+              : "Recomendado: 160×600 px"
+          }
         />
         {!imagem && <p className="text-xs text-red-400 mt-1">Obrigatório</p>}
       </div>
