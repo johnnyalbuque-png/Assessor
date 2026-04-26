@@ -13,7 +13,7 @@ export default async function AdminDashboard() {
     { label: "Fornecedores ativos", value: ativos, href: "/admin/fornecedores", cor: "bg-[#1B3A6B]" },
     { label: "Total cadastrado", value: totalFornecedores, href: "/admin/fornecedores", cor: "bg-[#2E86AB]" },
     { label: "Solicitações pendentes", value: solicitacoesPendentes, href: "/admin/solicitacoes", cor: "bg-amber-500" },
-    { label: "Provedores cadastrados", value: totalProvedores, href: "#", cor: "bg-emerald-600" },
+    { label: "Provedores cadastrados", value: totalProvedores, href: "/admin/provedores", cor: "bg-emerald-600" },
   ];
 
   return (
@@ -38,6 +38,9 @@ export default async function AdminDashboard() {
           </Link>
           <Link href="/admin/fornecedores" className="border border-gray-200 text-gray-700 px-5 py-2.5 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors">
             Gerenciar fornecedores
+          </Link>
+          <Link href="/admin/categorias" className="border border-gray-200 text-gray-700 px-5 py-2.5 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors">
+            Gerenciar categorias
           </Link>
         </div>
       </div>

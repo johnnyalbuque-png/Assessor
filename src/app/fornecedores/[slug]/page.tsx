@@ -26,8 +26,17 @@ export default async function PerfilFornecedor({ params }: { params: Promise<{ s
           {/* Card principal */}
           <div className="bg-white rounded-2xl shadow-md p-8 mb-6">
             <div className="flex flex-col sm:flex-row sm:items-start gap-6">
-              <div className="w-20 h-20 rounded-xl bg-gray-100 flex items-center justify-center text-3xl shrink-0">
-                {fornecedor.categoria.icone ?? "🏢"}
+              <div className="w-20 h-20 rounded-xl shrink-0 overflow-hidden bg-gray-100 flex items-center justify-center">
+                {fornecedor.logo ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={fornecedor.logo}
+                    alt={fornecedor.nome}
+                    className="w-full h-full object-contain"
+                  />
+                ) : (
+                  <span className="text-3xl">{fornecedor.categoria.icone ?? "🏢"}</span>
+                )}
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex flex-wrap items-center gap-2 mb-2">

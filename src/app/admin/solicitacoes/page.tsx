@@ -28,7 +28,14 @@ export default async function Solicitacoes() {
           <tbody className="divide-y divide-gray-50">
             {solicitacoes.map((s) => (
               <tr key={s.id} className="hover:bg-gray-50">
-                <td className="px-6 py-4 font-medium text-gray-900">{s.empresa}</td>
+                <td className="px-6 py-4">
+                  <p className="font-medium text-gray-900">{s.empresa}</p>
+                  {s.mensagem && (
+                    <p className="text-xs text-gray-400 mt-1 max-w-xs truncate" title={s.mensagem}>
+                      {s.mensagem}
+                    </p>
+                  )}
+                </td>
                 <td className="px-6 py-4 text-gray-500">{s.email}</td>
                 <td className="px-6 py-4 text-gray-500">{s.telefone ?? "—"}</td>
                 <td className="px-6 py-4">
