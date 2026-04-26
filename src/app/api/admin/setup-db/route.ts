@@ -134,6 +134,32 @@ export async function POST() {
     )
   `);
 
+  // New columns on Produto (imagem)
+  await prisma.$executeRawUnsafe(`DO $$ BEGIN ALTER TABLE "Produto" ADD COLUMN "imagem" TEXT; EXCEPTION WHEN duplicate_column THEN null; END $$`);
+
+  // New columns on Promocao (valor, regras, imagem)
+  await prisma.$executeRawUnsafe(`DO $$ BEGIN ALTER TABLE "Promocao" ADD COLUMN "valor" TEXT; EXCEPTION WHEN duplicate_column THEN null; END $$`);
+  await prisma.$executeRawUnsafe(`DO $$ BEGIN ALTER TABLE "Promocao" ADD COLUMN "regras" TEXT; EXCEPTION WHEN duplicate_column THEN null; END $$`);
+  await prisma.$executeRawUnsafe(`DO $$ BEGIN ALTER TABLE "Promocao" ADD COLUMN "imagem" TEXT; EXCEPTION WHEN duplicate_column THEN null; END $$`);
+
+  // Endereco
+  await prisma.$executeRawUnsafe(`
+    CREATE TABLE IF NOT EXISTS "Endereco" (
+      "id" TEXT NOT NULL, "fornecedorId" TEXT NOT NULL,
+      "nome" TEXT, "logradouro" TEXT NOT NULL,
+      "numero" TEXT, "complemento" TEXT, "bairro" TEXT,
+      "cidade" TEXT NOT NULL, "estado" TEXT NOT NULL, "cep" TEXT,
+      "criadoEm" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      CONSTRAINT "Endereco_pkey" PRIMARY KEY ("id")
+    )
+  `);
+  await prisma.$executeRawUnsafe(`CREATE INDEX IF NOT EXISTS "Endereco_fornecedorId_idx" ON "Endereco"("fornecedorId")`);
+  await prisma.$executeRawUnsafe(`
+    DO $$ BEGIN ALTER TABLE "Endereco" ADD CONSTRAINT "Endereco_fornecedorId_fkey"
+    FOREIGN KEY ("fornecedorId") REFERENCES "Fornecedor"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+    EXCEPTION WHEN duplicate_object THEN null; END $$
+  `);
+
   // ContaFornecedor
   await prisma.$executeRawUnsafe(`
     CREATE TABLE IF NOT EXISTS "ContaFornecedor" (

@@ -1,17 +1,20 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import ImageUpload from "@/components/ImageUpload";
+import PriceInput from "@/components/PriceInput";
 
 export default function ProdutoForm({ fornecedorId }: { fornecedorId: string }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [erro, setErro] = useState("");
   const [ativo, setAtivo] = useState(true);
+  const [preco, setPreco] = useState("");
+  const [imagem, setImagem] = useState("");
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    setLoading(true);
-    setErro("");
+    setLoading(true); setErro("");
     const form = e.currentTarget;
     const get = (n: string) => (form.elements.namedItem(n) as HTMLInputElement)?.value;
 
@@ -21,7 +24,8 @@ export default function ProdutoForm({ fornecedorId }: { fornecedorId: string }) 
       body: JSON.stringify({
         nome: get("nome"),
         descricao: get("descricao") || null,
-        preco: get("preco") || null,
+        preco: preco || null,
+        imagem: imagem || null,
         ativo,
         ordem: parseInt(get("ordem") || "0", 10),
       }),
@@ -31,8 +35,7 @@ export default function ProdutoForm({ fornecedorId }: { fornecedorId: string }) 
       const d = await res.json();
       setErro(d.error || "Erro ao salvar");
     } else {
-      form.reset();
-      setAtivo(true);
+      form.reset(); setAtivo(true); setPreco(""); setImagem("");
       router.refresh();
     }
     setLoading(false);
@@ -52,13 +55,17 @@ export default function ProdutoForm({ fornecedorId }: { fornecedorId: string }) 
       </div>
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Preço (ex: R$ 2.500)</label>
-          <input name="preco" className={field} placeholder="R$ ..." />
+          <label className="block text-sm font-medium text-gray-700 mb-1">Preço</label>
+          <PriceInput value={preco} onChange={setPreco} placeholder="2.500,00" />
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Ordem</label>
           <input name="ordem" type="number" defaultValue="0" className={field} />
         </div>
+      </div>
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1.5">Imagem (opcional)</label>
+        <ImageUpload value={imagem} onChange={setImagem} tipo="default" aspect="wide" />
       </div>
       <label className="flex items-center gap-2 cursor-pointer">
         <input type="checkbox" checked={ativo} onChange={(e) => setAtivo(e.target.checked)} className="w-4 h-4 accent-[#1B3A6B]" />

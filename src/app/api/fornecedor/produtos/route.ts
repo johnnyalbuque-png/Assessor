@@ -17,11 +17,11 @@ export async function POST(req: NextRequest) {
   const conta = await getContaFromSession();
   if (!conta) return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
 
-  const { nome, descricao, preco, ordem } = await req.json();
+  const { nome, descricao, preco, imagem, ordem } = await req.json();
   if (!nome) return NextResponse.json({ error: "Nome obrigatório" }, { status: 400 });
 
   const produto = await prisma.produto.create({
-    data: { nome, descricao, preco, ordem: ordem ?? 0, fornecedorId: conta.fornecedorId },
+    data: { nome, descricao, preco, imagem, ordem: ordem ?? 0, fornecedorId: conta.fornecedorId },
   });
   return NextResponse.json(produto);
 }

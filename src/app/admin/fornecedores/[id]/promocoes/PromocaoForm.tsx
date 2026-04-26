@@ -1,17 +1,20 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import ImageUpload from "@/components/ImageUpload";
+import PriceInput from "@/components/PriceInput";
 
 export default function PromocaoForm({ fornecedorId }: { fornecedorId: string }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [erro, setErro] = useState("");
   const [ativo, setAtivo] = useState(true);
+  const [valor, setValor] = useState("");
+  const [imagem, setImagem] = useState("");
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    setLoading(true);
-    setErro("");
+    setLoading(true); setErro("");
     const form = e.currentTarget;
     const get = (n: string) => (form.elements.namedItem(n) as HTMLInputElement)?.value;
 
@@ -21,6 +24,9 @@ export default function PromocaoForm({ fornecedorId }: { fornecedorId: string })
       body: JSON.stringify({
         titulo: get("titulo"),
         descricao: get("descricao"),
+        valor: valor || null,
+        regras: get("regras") || null,
+        imagem: imagem || null,
         validade: get("validade") || null,
         ativo,
       }),
@@ -30,8 +36,7 @@ export default function PromocaoForm({ fornecedorId }: { fornecedorId: string })
       const d = await res.json();
       setErro(d.error || "Erro ao salvar");
     } else {
-      form.reset();
-      setAtivo(true);
+      form.reset(); setAtivo(true); setValor(""); setImagem("");
       router.refresh();
     }
     setLoading(false);
@@ -49,9 +54,23 @@ export default function PromocaoForm({ fornecedorId }: { fornecedorId: string })
         <label className="block text-sm font-medium text-gray-700 mb-1">Descrição *</label>
         <textarea name="descricao" required rows={3} className={field} placeholder="Detalhes da promoção..." />
       </div>
+      <div className="grid grid-cols-2 gap-3">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Valor / Desconto</label>
+          <PriceInput value={valor} onChange={setValor} placeholder="199,90" />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Válido até</label>
+          <input name="validade" type="date" className={field} />
+        </div>
+      </div>
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Válido até (opcional)</label>
-        <input name="validade" type="date" className={field} />
+        <label className="block text-sm font-medium text-gray-700 mb-1">Regras / Condições</label>
+        <textarea name="regras" rows={2} className={field} placeholder="Condições de uso da promoção..." />
+      </div>
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1.5">Imagem (opcional)</label>
+        <ImageUpload value={imagem} onChange={setImagem} tipo="banner" aspect="wide" />
       </div>
       <label className="flex items-center gap-2 cursor-pointer">
         <input type="checkbox" checked={ativo} onChange={(e) => setAtivo(e.target.checked)} className="w-4 h-4 accent-[#1B3A6B]" />

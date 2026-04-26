@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ContactButtons from "./ContactButtons";
+import { formatarPreco } from "@/lib/format";
 
 export const revalidate = 60;
 
@@ -22,6 +23,7 @@ export default async function PerfilFornecedor({ params }: { params: Promise<{ s
       categoria: true,
       produtos: { where: { ativo: true }, orderBy: [{ ordem: "asc" }, { criadoEm: "asc" }] },
       promocoes: { where: { ativo: true }, orderBy: { criadoEm: "desc" } },
+      enderecos: { orderBy: { criadoEm: "asc" } },
     },
   });
 
@@ -110,14 +112,22 @@ export default async function PerfilFornecedor({ params }: { params: Promise<{ s
                   <h2 className="text-lg font-bold text-gray-900 mb-4">Produtos e serviços</h2>
                   <div className="grid sm:grid-cols-2 gap-4">
                     {fornecedor.produtos.map((p) => (
-                      <div key={p.id} className="border border-gray-100 rounded-xl p-4 bg-gray-50">
-                        <div className="flex items-start justify-between gap-2">
-                          <h3 className="font-semibold text-gray-800">{p.nome}</h3>
-                          {p.preco && (
-                            <span className="text-sm font-bold text-[#1B3A6B] shrink-0">{p.preco}</span>
-                          )}
+                      <div key={p.id} className="border border-gray-100 rounded-xl overflow-hidden bg-gray-50">
+                        {p.imagem && (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img src={p.imagem} alt={p.nome} className="w-full h-36 object-cover" />
+                        )}
+                        <div className="p-4">
+                          <div className="flex items-start justify-between gap-2">
+                            <h3 className="font-semibold text-gray-800">{p.nome}</h3>
+                            {p.preco && (
+                              <span className="text-sm font-bold text-[#1B3A6B] shrink-0">
+                                {formatarPreco(p.preco) ?? p.preco}
+                              </span>
+                            )}
+                          </div>
+                          {p.descricao && <p className="text-sm text-gray-500 mt-1">{p.descricao}</p>}
                         </div>
-                        {p.descricao && <p className="text-sm text-gray-500 mt-1">{p.descricao}</p>}
                       </div>
                     ))}
                   </div>
@@ -130,14 +140,51 @@ export default async function PerfilFornecedor({ params }: { params: Promise<{ s
                   <h2 className="text-lg font-bold text-gray-900 mb-4">🏷️ Promoções ativas</h2>
                   <div className="space-y-4">
                     {fornecedor.promocoes.map((p) => (
-                      <div key={p.id} className="border-l-4 border-[#2E86AB] bg-blue-50 rounded-r-xl px-5 py-4">
-                        <h3 className="font-semibold text-gray-900">{p.titulo}</h3>
-                        <p className="text-sm text-gray-600 mt-1">{p.descricao}</p>
-                        {p.validade && (
-                          <p className="text-xs text-gray-400 mt-2">
-                            Válido até {new Date(p.validade).toLocaleDateString("pt-BR")}
-                          </p>
+                      <div key={p.id} className="border border-gray-100 rounded-xl overflow-hidden">
+                        {p.imagem && (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img src={p.imagem} alt={p.titulo} className="w-full h-40 object-cover" />
                         )}
+                        <div className="border-l-4 border-[#2E86AB] bg-blue-50 px-5 py-4">
+                          <div className="flex items-start justify-between gap-3">
+                            <h3 className="font-semibold text-gray-900">{p.titulo}</h3>
+                            {p.valor && (
+                              <span className="text-sm font-bold text-green-700 bg-green-100 px-2.5 py-0.5 rounded-full shrink-0">
+                                {formatarPreco(p.valor) ?? p.valor}
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-sm text-gray-600 mt-1">{p.descricao}</p>
+                          {p.regras && (
+                            <p className="text-xs text-gray-400 mt-2 italic border-t border-blue-100 pt-2">{p.regras}</p>
+                          )}
+                          {p.validade && (
+                            <p className="text-xs text-gray-400 mt-2">
+                              Válido até {new Date(p.validade).toLocaleDateString("pt-BR")}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </section>
+              )}
+
+              {/* Endereços */}
+              {fornecedor.enderecos.length > 0 && (
+                <section className="bg-white rounded-xl border border-gray-100 p-6">
+                  <h2 className="text-lg font-bold text-gray-900 mb-4">📍 Onde nos encontrar</h2>
+                  <div className="grid sm:grid-cols-2 gap-3">
+                    {fornecedor.enderecos.map((end) => (
+                      <div key={end.id} className="border border-gray-100 rounded-xl p-4 bg-gray-50">
+                        {end.nome && <p className="text-xs font-semibold text-[#2E86AB] uppercase tracking-wide mb-1">{end.nome}</p>}
+                        <p className="text-sm text-gray-800">
+                          {end.logradouro}{end.numero ? `, ${end.numero}` : ""}{end.complemento ? ` — ${end.complemento}` : ""}
+                        </p>
+                        <p className="text-sm text-gray-500">
+                          {[end.bairro, end.cidade, end.estado].filter(Boolean).join(", ")}
+                          {end.cep ? ` · CEP ${end.cep}` : ""}
+                        </p>
                       </div>
                     ))}
                   </div>

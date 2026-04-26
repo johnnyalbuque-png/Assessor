@@ -12,13 +12,14 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
     return NextResponse.json({ error: "Não encontrado" }, { status: 404 });
   }
 
-  const { nome, descricao, preco, ativo, ordem } = await req.json();
+  const { nome, descricao, preco, imagem, ativo, ordem } = await req.json();
   const atualizado = await prisma.produto.update({
     where: { id },
     data: {
       ...(nome !== undefined && { nome }),
       ...(descricao !== undefined && { descricao }),
       ...(preco !== undefined && { preco }),
+      ...(imagem !== undefined && { imagem }),
       ...(ativo !== undefined && { ativo }),
       ...(ordem !== undefined && { ordem }),
     },

@@ -7,25 +7,26 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
   if (!conta) return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
 
   const { id } = await params;
-  const promocao = await prisma.promocao.findUnique({ where: { id } });
-  if (!promocao || promocao.fornecedorId !== conta.fornecedorId) {
+  const end = await prisma.endereco.findUnique({ where: { id } });
+  if (!end || end.fornecedorId !== conta.fornecedorId) {
     return NextResponse.json({ error: "Não encontrado" }, { status: 404 });
   }
 
-  const { titulo, descricao, valor, regras, imagem, validade, ativo } = await req.json();
-  const atualizada = await prisma.promocao.update({
+  const { nome, logradouro, numero, complemento, bairro, cidade, estado, cep } = await req.json();
+  const atualizado = await prisma.endereco.update({
     where: { id },
     data: {
-      ...(titulo !== undefined && { titulo }),
-      ...(descricao !== undefined && { descricao }),
-      ...(valor !== undefined && { valor }),
-      ...(regras !== undefined && { regras }),
-      ...(imagem !== undefined && { imagem }),
-      ...(validade !== undefined && { validade: validade ? new Date(validade) : null }),
-      ...(ativo !== undefined && { ativo }),
+      ...(nome !== undefined && { nome }),
+      ...(logradouro !== undefined && { logradouro }),
+      ...(numero !== undefined && { numero }),
+      ...(complemento !== undefined && { complemento }),
+      ...(bairro !== undefined && { bairro }),
+      ...(cidade !== undefined && { cidade }),
+      ...(estado !== undefined && { estado }),
+      ...(cep !== undefined && { cep }),
     },
   });
-  return NextResponse.json(atualizada);
+  return NextResponse.json(atualizado);
 }
 
 export async function DELETE(_: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -33,11 +34,11 @@ export async function DELETE(_: NextRequest, { params }: { params: Promise<{ id:
   if (!conta) return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
 
   const { id } = await params;
-  const promocao = await prisma.promocao.findUnique({ where: { id } });
-  if (!promocao || promocao.fornecedorId !== conta.fornecedorId) {
+  const end = await prisma.endereco.findUnique({ where: { id } });
+  if (!end || end.fornecedorId !== conta.fornecedorId) {
     return NextResponse.json({ error: "Não encontrado" }, { status: 404 });
   }
 
-  await prisma.promocao.delete({ where: { id } });
+  await prisma.endereco.delete({ where: { id } });
   return NextResponse.json({ ok: true });
 }
