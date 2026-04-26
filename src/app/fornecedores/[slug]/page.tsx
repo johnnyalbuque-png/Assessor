@@ -1,10 +1,15 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ContactButtons from "./ContactButtons";
 import { formatarPreco } from "@/lib/format";
+
+type FornecedorPage = Prisma.FornecedorGetPayload<{
+  include: { categoria: true; produtos: true; promocoes: true };
+}>;
 
 export const revalidate = 60;
 
@@ -17,19 +22,41 @@ const PLANO_CONFIG = {
 export default async function PerfilFornecedor({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
 
-  const fornecedor = await prisma.fornecedor.findUnique({
+  // New columns (imagem/valor/regras) may not exist yet — fallback to safe query
+  const fornecedor: FornecedorPage | null = await prisma.fornecedor.findUnique({
     where: { slug, ativo: true },
     include: {
       categoria: true,
       produtos: { where: { ativo: true }, orderBy: [{ ordem: "asc" }, { criadoEm: "asc" }] },
       promocoes: { where: { ativo: true }, orderBy: { criadoEm: "desc" } },
-      enderecos: { orderBy: { criadoEm: "asc" } },
     },
-  });
+  }).catch(() =>
+    prisma.fornecedor.findUnique({
+      where: { slug, ativo: true },
+      include: {
+        categoria: true,
+        produtos: {
+          where: { ativo: true },
+          orderBy: [{ ordem: "asc" }, { criadoEm: "asc" }],
+          select: { id: true, nome: true, descricao: true, preco: true, ativo: true, ordem: true, fornecedorId: true, criadoEm: true },
+        },
+        promocoes: {
+          where: { ativo: true },
+          orderBy: { criadoEm: "desc" },
+          select: { id: true, titulo: true, descricao: true, validade: true, ativo: true, fornecedorId: true, criadoEm: true },
+        },
+      },
+    }).then((r) => r as unknown as FornecedorPage | null)
+  );
 
   if (!fornecedor) notFound();
 
-  const plano = PLANO_CONFIG[fornecedor.plano];
+  const enderecos = await prisma.endereco.findMany({
+    where: { fornecedorId: fornecedor.id },
+    orderBy: { criadoEm: "asc" },
+  }).catch(() => []);
+
+  const plano = PLANO_CONFIG[fornecedor.plano as keyof typeof PLANO_CONFIG] ?? PLANO_CONFIG.BASICO;
 
   return (
     <>
@@ -171,11 +198,11 @@ export default async function PerfilFornecedor({ params }: { params: Promise<{ s
               )}
 
               {/* Endereços */}
-              {fornecedor.enderecos.length > 0 && (
+              {enderecos.length > 0 && (
                 <section className="bg-white rounded-xl border border-gray-100 p-6">
                   <h2 className="text-lg font-bold text-gray-900 mb-4">📍 Onde nos encontrar</h2>
                   <div className="grid sm:grid-cols-2 gap-3">
-                    {fornecedor.enderecos.map((end) => (
+                    {enderecos.map((end) => (
                       <div key={end.id} className="border border-gray-100 rounded-xl p-4 bg-gray-50">
                         {end.nome && <p className="text-xs font-semibold text-[#2E86AB] uppercase tracking-wide mb-1">{end.nome}</p>}
                         <p className="text-sm text-gray-800">
