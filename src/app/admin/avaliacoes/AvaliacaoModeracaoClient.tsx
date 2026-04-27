@@ -10,7 +10,7 @@ type Avaliacao = {
   nota: number;
   comentario: string;
   status: string;
-  criadoEm: string;
+  criadoEm: Date | string;
   fornecedor: { id: string; nome: string; slug: string };
 };
 
