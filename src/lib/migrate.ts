@@ -191,6 +191,26 @@ export async function runMigrations() {
     EXCEPTION WHEN duplicate_object THEN null; END $$
   `);
 
+  // Avaliacao
+  await prisma.$executeRawUnsafe(`DO $$ BEGIN CREATE TYPE "StatusAvaliacao" AS ENUM ('PENDENTE', 'APROVADO', 'REJEITADO'); EXCEPTION WHEN duplicate_object THEN null; END $$`);
+  await prisma.$executeRawUnsafe(`
+    CREATE TABLE IF NOT EXISTS "Avaliacao" (
+      "id" TEXT NOT NULL, "fornecedorId" TEXT NOT NULL,
+      "nome" TEXT NOT NULL, "email" TEXT,
+      "nota" INT NOT NULL, "comentario" TEXT NOT NULL,
+      "status" "StatusAvaliacao" NOT NULL DEFAULT 'PENDENTE',
+      "criadoEm" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      CONSTRAINT "Avaliacao_pkey" PRIMARY KEY ("id")
+    )
+  `);
+  await prisma.$executeRawUnsafe(`CREATE INDEX IF NOT EXISTS "Avaliacao_fornecedorId_status_idx" ON "Avaliacao"("fornecedorId","status")`);
+  await prisma.$executeRawUnsafe(`
+    DO $$ BEGIN ALTER TABLE "Avaliacao" ADD CONSTRAINT "Avaliacao_fornecedorId_fkey"
+    FOREIGN KEY ("fornecedorId") REFERENCES "Fornecedor"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+    EXCEPTION WHEN duplicate_object THEN null; END $$
+  `);
+  await prisma.$executeRawUnsafe(`DO $$ BEGIN ALTER TABLE "Fornecedor" ADD COLUMN "avaliacoesAtivo" BOOLEAN NOT NULL DEFAULT false; EXCEPTION WHEN duplicate_column THEN null; END $$`);
+
   // Evento
   await prisma.$executeRawUnsafe(`
     CREATE TABLE IF NOT EXISTS "Evento" (

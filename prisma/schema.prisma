@@ -24,9 +24,10 @@ model Fornecedor {
   logo         String?
   banner       String?
   plano        Plano            @default(BASICO)
-  ativo           Boolean          @default(true)
-  recomendado     Boolean          @default(false)
-  dashboardAtivo  Boolean          @default(false)
+  ativo             Boolean          @default(true)
+  recomendado       Boolean          @default(false)
+  dashboardAtivo    Boolean          @default(false)
+  avaliacoesAtivo   Boolean          @default(false)
   categoria    Categoria        @relation(fields: [categoriaId], references: [id])
   categoriaId  String
   regioes      String[]
@@ -41,6 +42,7 @@ model Fornecedor {
   enderecos    Endereco[]
   conta        ContaFornecedor?
   leads        LeadClick[]
+  avaliacoes   Avaliacao[]
   criadoEm    DateTime         @default(now())
   atualizadoEm DateTime        @updatedAt
 }
@@ -176,10 +178,30 @@ model Solicitacao {
   criadoEm DateTime          @default(now())
 }
 
+model Avaliacao {
+  id           String          @id @default(cuid())
+  fornecedorId String
+  fornecedor   Fornecedor      @relation(fields: [fornecedorId], references: [id], onDelete: Cascade)
+  nome         String
+  email        String?
+  nota         Int
+  comentario   String          @db.Text
+  status       StatusAvaliacao @default(PENDENTE)
+  criadoEm    DateTime        @default(now())
+
+  @@index([fornecedorId, status])
+}
+
 enum Plano {
   BASICO
   DESTAQUE
   PREMIUM
+}
+
+enum StatusAvaliacao {
+  PENDENTE
+  APROVADO
+  REJEITADO
 }
 
 enum TipoBanner {

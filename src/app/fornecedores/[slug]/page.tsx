@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ContactButtons from "./ContactButtons";
+import AvaliacaoForm from "./AvaliacaoForm";
 import { formatarPreco } from "@/lib/format";
 
 type FornecedorPage = Prisma.FornecedorGetPayload<{
@@ -51,10 +52,21 @@ export default async function PerfilFornecedor({ params }: { params: Promise<{ s
 
   if (!fornecedor) notFound();
 
-  const enderecos = await prisma.endereco.findMany({
-    where: { fornecedorId: fornecedor.id },
-    orderBy: { criadoEm: "asc" },
-  }).catch(() => []);
+  const [enderecos, avaliacoes] = await Promise.all([
+    prisma.endereco.findMany({
+      where: { fornecedorId: fornecedor.id },
+      orderBy: { criadoEm: "asc" },
+    }).catch(() => []),
+    prisma.avaliacao.findMany({
+      where: { fornecedorId: fornecedor.id, status: "APROVADO" },
+      orderBy: { criadoEm: "desc" },
+    }).catch(() => []),
+  ]);
+
+  const avaliacoesAtivo = (fornecedor as Record<string, unknown>).avaliacoesAtivo as boolean | undefined;
+  const mediaAvaliacao = avaliacoes.length > 0
+    ? (avaliacoes.reduce((s, a) => s + a.nota, 0) / avaliacoes.length)
+    : null;
 
   const plano = PLANO_CONFIG[fornecedor.plano as keyof typeof PLANO_CONFIG] ?? PLANO_CONFIG.BASICO;
 
@@ -111,6 +123,13 @@ export default async function PerfilFornecedor({ params }: { params: Promise<{ s
                         📍 {r}
                       </span>
                     ))}
+                  </div>
+                )}
+                {mediaAvaliacao !== null && (
+                  <div className="flex items-center gap-1.5 mt-3">
+                    <span className="text-yellow-400 text-sm leading-none">{"★".repeat(Math.round(mediaAvaliacao))}{"☆".repeat(5 - Math.round(mediaAvaliacao))}</span>
+                    <span className="text-sm font-semibold text-gray-700">{mediaAvaliacao.toFixed(1)}</span>
+                    <span className="text-xs text-gray-400">({avaliacoes.length} avaliação{avaliacoes.length !== 1 ? "ões" : ""})</span>
                   </div>
                 )}
               </div>
@@ -232,6 +251,39 @@ export default async function PerfilFornecedor({ params }: { params: Promise<{ s
                       title="Vídeo"
                     />
                   </div>
+                </section>
+              )}
+
+              {/* Avaliações */}
+              {(avaliacoes.length > 0 || avaliacoesAtivo) && (
+                <section className="bg-white rounded-xl border border-gray-100 p-6">
+                  <h2 className="text-lg font-bold text-gray-900 mb-4">⭐ Avaliações</h2>
+
+                  {avaliacoes.length > 0 && (
+                    <div className="space-y-4 mb-6">
+                      {avaliacoes.map((av) => (
+                        <div key={av.id} className="border-b border-gray-50 pb-4 last:border-0 last:pb-0">
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="text-yellow-400 text-sm leading-none">
+                              {"★".repeat(av.nota)}{"☆".repeat(5 - av.nota)}
+                            </span>
+                            <span className="font-semibold text-gray-800 text-sm">{av.nome}</span>
+                            <span className="text-xs text-gray-400 ml-auto">
+                              {new Date(av.criadoEm).toLocaleDateString("pt-BR")}
+                            </span>
+                          </div>
+                          <p className="text-sm text-gray-600">{av.comentario}</p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {avaliacoesAtivo && (
+                    <div className={avaliacoes.length > 0 ? "border-t border-gray-100 pt-5" : ""}>
+                      <p className="text-sm font-semibold text-gray-700 mb-4">Deixe sua avaliação</p>
+                      <AvaliacaoForm fornecedorId={fornecedor.id} />
+                    </div>
+                  )}
                 </section>
               )}
 

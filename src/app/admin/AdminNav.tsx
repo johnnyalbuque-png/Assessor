@@ -12,6 +12,7 @@ const NAV_ITEMS = [
   { href: "/admin/popup", label: "Popup de entrada", icon: "🪟" },
   { href: "/admin/eventos", label: "Eventos", icon: "📅" },
   { href: "/admin/analytics", label: "Analytics", icon: "📈" },
+  { href: "/admin/avaliacoes", label: "Avaliações", icon: "⭐" },
   { href: "/admin/solicitacoes", label: "Solicitações", icon: "📬" },
   { href: "/admin/provedores", label: "Provedores", icon: "📡" },
 ];

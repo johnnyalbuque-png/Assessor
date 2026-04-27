@@ -17,6 +17,7 @@ type FornecedorData = {
   ativo?: boolean;
   recomendado?: boolean;
   dashboardAtivo?: boolean;
+  avaliacoesAtivo?: boolean;
   categoriaId?: string;
   regioes?: string[];
   whatsapp?: string | null;
@@ -77,6 +78,7 @@ export default function FornecedorForm({
       ativo: getChecked("ativo"),
       recomendado: getChecked("recomendado"),
       dashboardAtivo: getChecked("dashboardAtivo"),
+      avaliacoesAtivo: getChecked("avaliacoesAtivo"),
       categoriaId: getValue("categoriaId"),
       regioes,
       whatsapp: getValue("whatsapp"),
@@ -276,6 +278,15 @@ export default function FornecedorForm({
             className="w-4 h-4 accent-emerald-600"
           />
           Dashboard de métricas ativo 📊
+        </label>
+        <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
+          <input
+            name="avaliacoesAtivo"
+            type="checkbox"
+            defaultChecked={inicial?.avaliacoesAtivo ?? false}
+            className="w-4 h-4 accent-yellow-500"
+          />
+          Avaliações ativas ⭐
         </label>
       </div>
 
