@@ -6,6 +6,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ContactButtons from "./ContactButtons";
 import AvaliacaoForm from "./AvaliacaoForm";
+import ContatoForm from "./ContatoForm";
 import { formatarPreco } from "@/lib/format";
 
 type FornecedorPage = Prisma.FornecedorGetPayload<{
@@ -64,6 +65,9 @@ export default async function PerfilFornecedor({ params }: { params: Promise<{ s
   ]);
 
   const avaliacoesAtivo = (fornecedor as Record<string, unknown>).avaliacoesAtivo as boolean | undefined;
+  const mostrarWhatsapp = (fornecedor as Record<string, unknown>).mostrarWhatsapp as boolean | undefined;
+  const mostrarEmail = (fornecedor as Record<string, unknown>).mostrarEmail as boolean | undefined;
+  const mostrarFormulario = (fornecedor as Record<string, unknown>).mostrarFormulario as boolean | undefined;
   const mediaAvaliacao = avaliacoes.length > 0
     ? (avaliacoes.reduce((s, a) => s + a.nota, 0) / avaliacoes.length)
     : null;
@@ -141,6 +145,8 @@ export default async function PerfilFornecedor({ params }: { params: Promise<{ s
                 site={fornecedor.site}
                 instagram={(fornecedor as Record<string, unknown>).instagram as string | null}
                 linkedin={(fornecedor as Record<string, unknown>).linkedin as string | null}
+                mostrarWhatsapp={mostrarWhatsapp !== false}
+                mostrarEmail={mostrarEmail !== false}
               />
             </div>
           </div>
@@ -251,6 +257,14 @@ export default async function PerfilFornecedor({ params }: { params: Promise<{ s
                       title="Vídeo"
                     />
                   </div>
+                </section>
+              )}
+
+              {/* Formulário de contato */}
+              {mostrarFormulario && (
+                <section className="bg-white rounded-xl border border-gray-100 p-6">
+                  <h2 className="text-lg font-bold text-gray-900 mb-4">📩 Enviar mensagem</h2>
+                  <ContatoForm fornecedorId={fornecedor.id} nomeFornecedor={fornecedor.nome} />
                 </section>
               )}
 

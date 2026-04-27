@@ -16,6 +16,9 @@ type Perfil = {
   logo: string | null;
   banner: string | null;
   regioes: string[];
+  mostrarWhatsapp?: boolean;
+  mostrarEmail?: boolean;
+  mostrarFormulario?: boolean;
 };
 
 export default function PerfilPage() {
@@ -153,6 +156,26 @@ export default function PerfilPage() {
         <div>
           <label className="label">Vídeo (YouTube)</label>
           <input className="input" value={field("video")} onChange={(e) => set("video", e.target.value)} placeholder="https://youtube.com/watch?v=..." />
+        </div>
+
+        {/* Opções de contato */}
+        <div className="border border-gray-100 rounded-xl p-5 bg-gray-50 space-y-3">
+          <p className="text-sm font-semibold text-gray-700">Opções de contato no perfil</p>
+          {[
+            { key: "mostrarWhatsapp" as const, label: "Mostrar botão WhatsApp 💬", defaultVal: true },
+            { key: "mostrarEmail" as const, label: "Mostrar botão E-mail ✉️", defaultVal: true },
+            { key: "mostrarFormulario" as const, label: "Mostrar formulário de contato 📩", defaultVal: false },
+          ].map(({ key, label, defaultVal }) => (
+            <label key={key} className="flex items-center gap-3 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={form[key] !== undefined ? Boolean(form[key]) : defaultVal}
+                onChange={(e) => setForm((f) => ({ ...f, [key]: e.target.checked }))}
+                className="w-4 h-4 accent-[#1B3A6B]"
+              />
+              <span className="text-sm text-gray-700">{label}</span>
+            </label>
+          ))}
         </div>
 
         <button type="submit" disabled={saving} className="btn-primary">

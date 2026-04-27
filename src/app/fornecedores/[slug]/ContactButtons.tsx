@@ -7,20 +7,25 @@ type Props = {
   site?: string | null;
   instagram?: string | null;
   linkedin?: string | null;
+  mostrarWhatsapp?: boolean;
+  mostrarEmail?: boolean;
 };
 
 function track(fornecedorId: string, tipo: string) {
   fetch(`/api/lead/${fornecedorId}/${tipo}`, { method: "POST" }).catch(() => {});
 }
 
-export default function ContactButtons({ fornecedorId, whatsapp, email, site, instagram, linkedin }: Props) {
-  if (!whatsapp && !email && !site && !instagram && !linkedin) return null;
+export default function ContactButtons({ fornecedorId, whatsapp, email, site, instagram, linkedin, mostrarWhatsapp = true, mostrarEmail = true }: Props) {
+  const showWhatsapp = mostrarWhatsapp && !!whatsapp;
+  const showEmail = mostrarEmail && !!email;
+
+  if (!showWhatsapp && !showEmail && !site && !instagram && !linkedin) return null;
 
   return (
     <div className="flex flex-col gap-2 shrink-0 w-full sm:w-auto">
-      {whatsapp && (
+      {showWhatsapp && (
         <a
-          href={`https://wa.me/55${whatsapp.replace(/\D/g, "")}`}
+          href={`https://wa.me/55${whatsapp!.replace(/\D/g, "")}`}
           target="_blank"
           rel="noopener noreferrer"
           onClick={() => track(fornecedorId, "whatsapp")}
@@ -60,7 +65,7 @@ export default function ContactButtons({ fornecedorId, whatsapp, email, site, in
           LinkedIn
         </a>
       )}
-      {email && (
+      {showEmail && (
         <a
           href={`mailto:${email}`}
           onClick={() => track(fornecedorId, "email")}

@@ -18,6 +18,9 @@ type FornecedorData = {
   recomendado?: boolean;
   dashboardAtivo?: boolean;
   avaliacoesAtivo?: boolean;
+  mostrarWhatsapp?: boolean;
+  mostrarEmail?: boolean;
+  mostrarFormulario?: boolean;
   categoriaId?: string;
   regioes?: string[];
   whatsapp?: string | null;
@@ -79,6 +82,9 @@ export default function FornecedorForm({
       recomendado: getChecked("recomendado"),
       dashboardAtivo: getChecked("dashboardAtivo"),
       avaliacoesAtivo: getChecked("avaliacoesAtivo"),
+      mostrarWhatsapp: getChecked("mostrarWhatsapp"),
+      mostrarEmail: getChecked("mostrarEmail"),
+      mostrarFormulario: getChecked("mostrarFormulario"),
       categoriaId: getValue("categoriaId"),
       regioes,
       whatsapp: getValue("whatsapp"),
@@ -288,6 +294,24 @@ export default function FornecedorForm({
           />
           Avaliações ativas ⭐
         </label>
+      </div>
+
+      <div className="bg-gray-50 rounded-xl border border-gray-100 p-5">
+        <p className="text-sm font-semibold text-gray-700 mb-3">Opções de contato no perfil</p>
+        <div className="flex flex-wrap gap-5">
+          <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
+            <input name="mostrarWhatsapp" type="checkbox" defaultChecked={inicial?.mostrarWhatsapp ?? true} className="w-4 h-4 accent-green-600" />
+            Botão WhatsApp 💬
+          </label>
+          <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
+            <input name="mostrarEmail" type="checkbox" defaultChecked={inicial?.mostrarEmail ?? true} className="w-4 h-4 accent-blue-600" />
+            Botão E-mail ✉️
+          </label>
+          <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
+            <input name="mostrarFormulario" type="checkbox" defaultChecked={inicial?.mostrarFormulario ?? false} className="w-4 h-4 accent-[#1B3A6B]" />
+            Formulário de contato 📩
+          </label>
+        </div>
       </div>
 
       <div className="flex gap-3 pt-2">

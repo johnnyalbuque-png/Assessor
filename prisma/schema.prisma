@@ -28,6 +28,9 @@ model Fornecedor {
   recomendado       Boolean          @default(false)
   dashboardAtivo    Boolean          @default(false)
   avaliacoesAtivo   Boolean          @default(false)
+  mostrarWhatsapp   Boolean          @default(true)
+  mostrarEmail      Boolean          @default(true)
+  mostrarFormulario Boolean          @default(false)
   categoria    Categoria        @relation(fields: [categoriaId], references: [id])
   categoriaId  String
   regioes      String[]
@@ -43,6 +46,7 @@ model Fornecedor {
   conta        ContaFornecedor?
   leads        LeadClick[]
   avaliacoes   Avaliacao[]
+  mensagens    MensagemContato[]
   criadoEm    DateTime         @default(now())
   atualizadoEm DateTime        @updatedAt
 }
@@ -176,6 +180,19 @@ model Solicitacao {
   mensagem  String?           @db.Text
   status    StatusSolicitacao @default(PENDENTE)
   criadoEm DateTime          @default(now())
+}
+
+model MensagemContato {
+  id           String     @id @default(cuid())
+  fornecedorId String
+  fornecedor   Fornecedor @relation(fields: [fornecedorId], references: [id], onDelete: Cascade)
+  nome         String
+  email        String
+  mensagem     String     @db.Text
+  lido         Boolean    @default(false)
+  criadoEm    DateTime   @default(now())
+
+  @@index([fornecedorId, lido])
 }
 
 model Avaliacao {

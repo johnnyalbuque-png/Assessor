@@ -48,6 +48,28 @@ export async function runMigrations() {
   await prisma.$executeRawUnsafe(`DO $$ BEGIN ALTER TABLE "Fornecedor" ADD COLUMN "instagram" TEXT; EXCEPTION WHEN duplicate_column THEN null; END $$`);
   await prisma.$executeRawUnsafe(`DO $$ BEGIN ALTER TABLE "Fornecedor" ADD COLUMN "linkedin" TEXT; EXCEPTION WHEN duplicate_column THEN null; END $$`);
   await prisma.$executeRawUnsafe(`DO $$ BEGIN ALTER TABLE "Fornecedor" ADD COLUMN "dashboardAtivo" BOOLEAN NOT NULL DEFAULT false; EXCEPTION WHEN duplicate_column THEN null; END $$`);
+  await prisma.$executeRawUnsafe(`DO $$ BEGIN ALTER TABLE "Fornecedor" ADD COLUMN "avaliacoesAtivo" BOOLEAN NOT NULL DEFAULT false; EXCEPTION WHEN duplicate_column THEN null; END $$`);
+  await prisma.$executeRawUnsafe(`DO $$ BEGIN ALTER TABLE "Fornecedor" ADD COLUMN "mostrarWhatsapp" BOOLEAN NOT NULL DEFAULT true; EXCEPTION WHEN duplicate_column THEN null; END $$`);
+  await prisma.$executeRawUnsafe(`DO $$ BEGIN ALTER TABLE "Fornecedor" ADD COLUMN "mostrarEmail" BOOLEAN NOT NULL DEFAULT true; EXCEPTION WHEN duplicate_column THEN null; END $$`);
+  await prisma.$executeRawUnsafe(`DO $$ BEGIN ALTER TABLE "Fornecedor" ADD COLUMN "mostrarFormulario" BOOLEAN NOT NULL DEFAULT false; EXCEPTION WHEN duplicate_column THEN null; END $$`);
+
+  // MensagemContato
+  await prisma.$executeRawUnsafe(`
+    CREATE TABLE IF NOT EXISTS "MensagemContato" (
+      "id" TEXT NOT NULL, "fornecedorId" TEXT NOT NULL,
+      "nome" TEXT NOT NULL, "email" TEXT NOT NULL,
+      "mensagem" TEXT NOT NULL,
+      "lido" BOOLEAN NOT NULL DEFAULT false,
+      "criadoEm" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      CONSTRAINT "MensagemContato_pkey" PRIMARY KEY ("id")
+    )
+  `);
+  await prisma.$executeRawUnsafe(`CREATE INDEX IF NOT EXISTS "MensagemContato_fornecedorId_lido_idx" ON "MensagemContato"("fornecedorId","lido")`);
+  await prisma.$executeRawUnsafe(`
+    DO $$ BEGIN ALTER TABLE "MensagemContato" ADD CONSTRAINT "MensagemContato_fornecedorId_fkey"
+    FOREIGN KEY ("fornecedorId") REFERENCES "Fornecedor"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+    EXCEPTION WHEN duplicate_object THEN null; END $$
+  `);
 
   // Produto
   await prisma.$executeRawUnsafe(`
