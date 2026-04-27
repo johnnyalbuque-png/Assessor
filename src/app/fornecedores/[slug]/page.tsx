@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import type { Metadata } from "next";
 import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import Header from "@/components/Header";
@@ -7,7 +8,10 @@ import Footer from "@/components/Footer";
 import ContactButtons from "./ContactButtons";
 import AvaliacaoForm from "./AvaliacaoForm";
 import ContatoForm from "./ContatoForm";
+import ShareButtons from "./ShareButtons";
 import { formatarPreco } from "@/lib/format";
+
+const BASE_URL = (process.env.NEXTAUTH_URL ?? "https://vitrineisp.com.br").replace(/\/$/, "");
 
 type FornecedorPage = Prisma.FornecedorGetPayload<{
   include: { categoria: true; produtos: true; promocoes: true };
@@ -20,6 +24,45 @@ const PLANO_CONFIG = {
   DESTAQUE: { label: "Destaque", cor: "bg-blue-100 text-blue-700 border-blue-200" },
   BASICO: { label: "Básico", cor: "bg-gray-100 text-gray-600 border-gray-200" },
 };
+
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
+  const f = await prisma.fornecedor.findUnique({
+    where: { slug, ativo: true },
+    include: { categoria: true },
+  }).catch(() => null);
+
+  if (!f) return {};
+
+  const title = `${f.nome} | Vitrine ISP`;
+  const descBase = f.descricao.replace(/\s+/g, " ").trim();
+  const description = f.tagline
+    ? `${f.tagline} — ${descBase.slice(0, 120)}...`
+    : descBase.slice(0, 155) + (descBase.length > 155 ? "..." : "");
+  const url = `${BASE_URL}/fornecedores/${slug}`;
+  const images = f.banner ? [{ url: f.banner }] : f.logo ? [{ url: f.logo }] : [];
+
+  return {
+    title,
+    description,
+    alternates: { canonical: url },
+    openGraph: {
+      title,
+      description,
+      url,
+      siteName: "Vitrine ISP",
+      images,
+      type: "website",
+      locale: "pt_BR",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: images.map((i) => i.url),
+    },
+  };
+}
 
 export default async function PerfilFornecedor({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -73,9 +116,42 @@ export default async function PerfilFornecedor({ params }: { params: Promise<{ s
     : null;
 
   const plano = PLANO_CONFIG[fornecedor.plano as keyof typeof PLANO_CONFIG] ?? PLANO_CONFIG.BASICO;
+  const pageUrl = `${BASE_URL}/fornecedores/${fornecedor.slug}`;
+
+  const schemaOrg = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: fornecedor.nome,
+    description: fornecedor.descricao.slice(0, 300),
+    url: pageUrl,
+    ...(fornecedor.logo && { logo: fornecedor.logo }),
+    ...(fornecedor.email && { email: fornecedor.email }),
+    ...(fornecedor.whatsapp && { telephone: `+55${fornecedor.whatsapp.replace(/\D/g, "")}` }),
+    ...(fornecedor.site && { sameAs: [fornecedor.site] }),
+    ...(enderecos.length > 0 && {
+      address: {
+        "@type": "PostalAddress",
+        streetAddress: `${enderecos[0].logradouro}${enderecos[0].numero ? ", " + enderecos[0].numero : ""}`,
+        addressLocality: enderecos[0].cidade,
+        addressRegion: enderecos[0].estado,
+        postalCode: enderecos[0].cep ?? undefined,
+        addressCountry: "BR",
+      },
+    }),
+    ...(mediaAvaliacao !== null && {
+      aggregateRating: {
+        "@type": "AggregateRating",
+        ratingValue: mediaAvaliacao.toFixed(1),
+        reviewCount: avaliacoes.length,
+        bestRating: 5,
+        worstRating: 1,
+      },
+    }),
+  };
 
   return (
     <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaOrg) }} />
       <Header />
       <main className="flex-1 bg-gray-50">
         {/* Cover */}
@@ -301,10 +377,11 @@ export default async function PerfilFornecedor({ params }: { params: Promise<{ s
                 </section>
               )}
 
-              <div>
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <Link href="/fornecedores" className="text-[#2E86AB] hover:underline text-sm">
                   ← Voltar para todos os fornecedores
                 </Link>
+                <ShareButtons url={pageUrl} titulo={fornecedor.nome} />
               </div>
             </div>
 
