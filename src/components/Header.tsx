@@ -4,6 +4,7 @@ import { getConfigSite } from "@/lib/config-site";
 export default async function Header() {
   const config = await getConfigSite();
   const btnsNoHeader = config.hero_btns_no_header === "1";
+  const eventosAtivo = config.eventos_ativo === "1";
 
   return (
     <header className="bg-[#1B3A6B] text-white shadow-md">
@@ -12,9 +13,17 @@ export default async function Header() {
           Vitrine<span className="text-[#2E86AB]">ISP</span>
         </Link>
         <nav className="flex items-center gap-4 text-sm">
+          <Link href="/promocoes" className="hover:text-[#2E86AB] transition-colors hidden sm:block">
+            Promoções
+          </Link>
+          {eventosAtivo && (
+            <Link href="/eventos" className="hover:text-[#2E86AB] transition-colors hidden sm:block">
+              Eventos
+            </Link>
+          )}
           {btnsNoHeader ? (
             <>
-              <Link href="/fornecedores" className="hidden sm:block hover:text-[#2E86AB] transition-colors font-medium">
+              <Link href="/fornecedores" className="hidden md:block hover:text-[#2E86AB] transition-colors font-medium">
                 Ver todos os fornecedores
               </Link>
               <Link

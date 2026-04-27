@@ -45,6 +45,8 @@ export async function runMigrations() {
     EXCEPTION WHEN duplicate_object THEN null; END $$
   `);
   await prisma.$executeRawUnsafe(`DO $$ BEGIN ALTER TABLE "Fornecedor" ADD COLUMN "tagline" TEXT; EXCEPTION WHEN duplicate_column THEN null; END $$`);
+  await prisma.$executeRawUnsafe(`DO $$ BEGIN ALTER TABLE "Fornecedor" ADD COLUMN "instagram" TEXT; EXCEPTION WHEN duplicate_column THEN null; END $$`);
+  await prisma.$executeRawUnsafe(`DO $$ BEGIN ALTER TABLE "Fornecedor" ADD COLUMN "linkedin" TEXT; EXCEPTION WHEN duplicate_column THEN null; END $$`);
 
   // Produto
   await prisma.$executeRawUnsafe(`
@@ -186,6 +188,18 @@ export async function runMigrations() {
     DO $$ BEGIN ALTER TABLE "LeadClick" ADD CONSTRAINT "LeadClick_fornecedorId_fkey"
     FOREIGN KEY ("fornecedorId") REFERENCES "Fornecedor"("id") ON DELETE CASCADE ON UPDATE CASCADE;
     EXCEPTION WHEN duplicate_object THEN null; END $$
+  `);
+
+  // Evento
+  await prisma.$executeRawUnsafe(`
+    CREATE TABLE IF NOT EXISTS "Evento" (
+      "id" TEXT NOT NULL, "titulo" TEXT NOT NULL, "descricao" TEXT NOT NULL,
+      "data" TIMESTAMP(3) NOT NULL, "local" TEXT, "cidade" TEXT,
+      "link" TEXT, "imagem" TEXT,
+      "ativo" BOOLEAN NOT NULL DEFAULT true, "destaque" BOOLEAN NOT NULL DEFAULT false,
+      "criadoEm" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      CONSTRAINT "Evento_pkey" PRIMARY KEY ("id")
+    )
   `);
 
   // ConfigSite (key-value store for site configuration)

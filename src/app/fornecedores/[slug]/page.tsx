@@ -120,6 +120,8 @@ export default async function PerfilFornecedor({ params }: { params: Promise<{ s
                 whatsapp={fornecedor.whatsapp}
                 email={fornecedor.email}
                 site={fornecedor.site}
+                instagram={(fornecedor as Record<string, unknown>).instagram as string | null}
+                linkedin={(fornecedor as Record<string, unknown>).linkedin as string | null}
               />
             </div>
           </div>

@@ -21,6 +21,8 @@ type FornecedorData = {
   whatsapp?: string | null;
   email?: string | null;
   site?: string | null;
+  instagram?: string | null;
+  linkedin?: string | null;
   video?: string | null;
 };
 
@@ -78,6 +80,8 @@ export default function FornecedorForm({
       whatsapp: getValue("whatsapp"),
       email: getValue("email"),
       site: getValue("site"),
+      instagram: getValue("instagram") || null,
+      linkedin: getValue("linkedin") || null,
       video: getValue("video"),
     };
 
@@ -225,6 +229,14 @@ export default function FornecedorForm({
           <input name="site" defaultValue={inicial?.site ?? ""} placeholder="https://..." className={field} />
         </div>
         <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Instagram</label>
+          <input name="instagram" defaultValue={inicial?.instagram ?? ""} placeholder="https://instagram.com/suaempresa" className={field} />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">LinkedIn</label>
+          <input name="linkedin" defaultValue={inicial?.linkedin ?? ""} placeholder="https://linkedin.com/company/..." className={field} />
+        </div>
+        <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Vídeo (URL embed)</label>
           <input
             name="video"
@@ -252,7 +264,7 @@ export default function FornecedorForm({
             defaultChecked={inicial?.recomendado ?? false}
             className="w-4 h-4 accent-[#2E86AB]"
           />
-          Recomendado por Johnny ★
+          Recomendado pela INTER&apos;ISP ★
         </label>
       </div>
 

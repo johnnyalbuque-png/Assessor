@@ -32,6 +32,8 @@ model Fornecedor {
   whatsapp     String?
   email        String?
   site         String?
+  instagram    String?
+  linkedin     String?
   video        String?
   produtos     Produto[]
   promocoes    Promocao[]
@@ -120,6 +122,20 @@ model Banner {
 model ConfigSite {
   chave String @id
   valor String @default("") @db.Text
+}
+
+model Evento {
+  id        String   @id @default(cuid())
+  titulo    String
+  descricao String   @db.Text
+  data      DateTime
+  local     String?
+  cidade    String?
+  link      String?
+  imagem    String?
+  ativo     Boolean  @default(true)
+  destaque  Boolean  @default(false)
+  criadoEm DateTime @default(now())
 }
 
 model Pageview {

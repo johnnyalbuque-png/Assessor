@@ -8,6 +8,7 @@ export const CONFIG_DEFAULTS: Record<string, string> = {
   hero_btn_fornecedores: "1",
   hero_btn_anunciar: "1",
   hero_btns_no_header: "0",
+  eventos_ativo: "0",
   popup_ativo: "0",
   popup_titulo: "",
   popup_descricao: "",

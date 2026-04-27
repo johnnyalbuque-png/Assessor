@@ -10,6 +10,8 @@ type Perfil = {
   whatsapp: string | null;
   email: string | null;
   site: string | null;
+  instagram: string | null;
+  linkedin: string | null;
   video: string | null;
   logo: string | null;
   banner: string | null;
@@ -114,6 +116,14 @@ export default function PerfilPage() {
           <div>
             <label className="label">Site</label>
             <input className="input" value={field("site")} onChange={(e) => set("site", e.target.value)} placeholder="https://empresa.com" />
+          </div>
+          <div>
+            <label className="label">Instagram</label>
+            <input className="input" value={field("instagram")} onChange={(e) => set("instagram", e.target.value)} placeholder="https://instagram.com/suaempresa" />
+          </div>
+          <div>
+            <label className="label">LinkedIn</label>
+            <input className="input" value={field("linkedin")} onChange={(e) => set("linkedin", e.target.value)} placeholder="https://linkedin.com/company/..." />
           </div>
         </div>
 
