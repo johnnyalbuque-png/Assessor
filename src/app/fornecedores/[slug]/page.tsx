@@ -76,12 +76,12 @@ export default async function PerfilFornecedor({ params }: { params: Promise<{ s
       <main className="flex-1 bg-gray-50">
         {/* Cover */}
         {fornecedor.banner ? (
-          <div className="w-full h-56 md:h-80 overflow-hidden">
+          <div className="w-full h-64 md:h-96 overflow-hidden">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={fornecedor.banner} alt={fornecedor.nome} className="w-full h-full object-cover" />
+            <img src={fornecedor.banner} alt={fornecedor.nome} className="w-full h-full object-cover object-center" />
           </div>
         ) : (
-          <div className="w-full h-36 bg-gradient-to-r from-[#1B3A6B] to-[#2E86AB]" />
+          <div className="w-full h-44 bg-gradient-to-r from-[#1B3A6B] to-[#2E86AB]" />
         )}
 
         <div className="max-w-5xl mx-auto px-4 pb-16">
