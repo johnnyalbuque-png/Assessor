@@ -76,7 +76,7 @@ export default async function PerfilFornecedor({ params }: { params: Promise<{ s
       <main className="flex-1 bg-gray-50">
         {/* Cover */}
         {fornecedor.banner ? (
-          <div className="w-full h-48 md:h-64 overflow-hidden">
+          <div className="w-full h-56 md:h-80 overflow-hidden">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={fornecedor.banner} alt={fornecedor.nome} className="w-full h-full object-cover" />
           </div>
