@@ -12,7 +12,7 @@ export default async function EditarFornecedor({ params }: { params: Promise<{ i
   const [fornecedor, categorias] = await Promise.all([
     prisma.fornecedor.findUnique({
       where: { id },
-      include: { _count: { select: { produtos: true, promocoes: true } } },
+      include: { _count: { select: { produtos: true, promocoes: true, enderecos: true } } },
     }),
     prisma.categoria.findMany({ orderBy: { nome: "asc" } }),
   ]);
@@ -45,6 +45,15 @@ export default async function EditarFornecedor({ params }: { params: Promise<{ i
           🏷️ Promoções
           <span className="bg-gray-100 text-gray-600 text-xs px-1.5 py-0.5 rounded-full">
             {fornecedor._count.promocoes}
+          </span>
+        </Link>
+        <Link
+          href={`/admin/fornecedores/${id}/enderecos`}
+          className="flex items-center gap-2 border border-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm hover:bg-gray-50 transition-colors"
+        >
+          📍 Endereços
+          <span className="bg-gray-100 text-gray-600 text-xs px-1.5 py-0.5 rounded-full">
+            {fornecedor._count.enderecos}
           </span>
         </Link>
         <Link
