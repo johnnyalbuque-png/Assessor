@@ -9,8 +9,15 @@ export default async function Header() {
   return (
     <header className="bg-[#1B3A6B] text-white shadow-md">
       <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
-        <Link href="/" className="text-xl font-bold tracking-tight">
-          Vitrine<span className="text-[#2E86AB]">ISP</span>
+        <Link href="/" className="flex items-center">
+          {config.site_logo ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={config.site_logo} alt="Vitrini ISP" className="h-10 w-auto object-contain" />
+          ) : (
+            <span className="text-2xl font-bold tracking-tight">
+              Vitrine<span className="text-[#2E86AB]">ISP</span>
+            </span>
+          )}
         </Link>
         <nav className="flex items-center gap-4 text-sm">
           <Link href="/promocoes" className="hover:text-[#2E86AB] transition-colors hidden sm:block">

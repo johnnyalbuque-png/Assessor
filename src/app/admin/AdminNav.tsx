@@ -17,7 +17,7 @@ const NAV_ITEMS = [
   { href: "/admin/provedores", label: "Provedores", icon: "📡" },
 ];
 
-export default function AdminNav({ children }: { children: React.ReactNode }) {
+export default function AdminNav({ children, logoUrl }: { children: React.ReactNode; logoUrl?: string }) {
   const pathname = usePathname();
 
   if (pathname === "/admin/login") {
@@ -28,9 +28,16 @@ export default function AdminNav({ children }: { children: React.ReactNode }) {
     <div className="min-h-screen flex bg-gray-50">
       <aside className="w-56 bg-[#1B3A6B] text-white flex flex-col">
         <div className="px-6 py-5 border-b border-white/10">
-          <Link href="/admin" className="text-lg font-bold">
-            Vitrine<span className="text-[#2E86AB]">ISP</span>
-            <span className="text-xs text-white/50 ml-2 font-normal">Admin</span>
+          <Link href="/admin" className="flex items-center gap-2">
+            {logoUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={logoUrl} alt="Vitrini ISP" className="h-7 w-auto object-contain brightness-0 invert" />
+            ) : (
+              <span className="text-lg font-bold">
+                Vitrine<span className="text-[#2E86AB]">ISP</span>
+              </span>
+            )}
+            <span className="text-xs text-white/50 font-normal">Admin</span>
           </Link>
         </div>
         <nav className="flex-1 px-3 py-4 space-y-1">

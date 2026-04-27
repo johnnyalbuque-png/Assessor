@@ -15,6 +15,7 @@ export const CONFIG_DEFAULTS: Record<string, string> = {
   popup_imagem: "",
   popup_link: "",
   popup_delay: "2",
+  site_logo: "",
 };
 
 export async function getConfigSite(): Promise<Record<string, string>> {

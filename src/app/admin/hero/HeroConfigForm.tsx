@@ -1,12 +1,14 @@
 "use client";
 import { useState } from "react";
 import Link from "next/link";
+import ImageUpload from "@/components/ImageUpload";
 
 export default function HeroConfigForm({ config }: { config: Record<string, string> }) {
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [erro, setErro] = useState("");
 
+  const [siteLogo, setSiteLogo] = useState(config.site_logo ?? "");
   const [modo, setModo] = useState(config.hero_modo ?? "cor");
   const [badge, setBadge] = useState(config.hero_badge ?? "");
   const [titulo, setTitulo] = useState(config.hero_titulo ?? "");
@@ -23,6 +25,7 @@ export default function HeroConfigForm({ config }: { config: Record<string, stri
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
+        site_logo: siteLogo,
         hero_modo: modo,
         hero_badge: badge,
         hero_titulo: titulo,
@@ -46,6 +49,35 @@ export default function HeroConfigForm({ config }: { config: Record<string, stri
 
   return (
     <div className="space-y-6 max-w-2xl">
+      {/* Logo do site */}
+      <div className="bg-white rounded-xl border border-gray-100 p-6">
+        <h2 className="font-semibold text-gray-900 mb-1">Logo do site</h2>
+        <p className="text-sm text-gray-400 mb-4">Aparece no cabeçalho do site e no painel admin. Recomendado: fundo transparente (PNG), versão colorida para o site.</p>
+        <div className="max-w-xs">
+          <ImageUpload
+            value={siteLogo}
+            onChange={setSiteLogo}
+            tipo="logo"
+            aspect="wide"
+            hint="Recomendado: PNG com fundo transparente, 400×120 px"
+          />
+        </div>
+        {siteLogo && (
+          <div className="mt-4 flex items-center gap-6">
+            <div className="bg-[#1B3A6B] rounded-lg px-4 py-3 flex items-center gap-2">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={siteLogo} alt="preview" className="h-8 w-auto object-contain" />
+              <span className="text-xs text-white/60">no header</span>
+            </div>
+            <div className="bg-white border border-gray-200 rounded-lg px-4 py-3 flex items-center gap-2">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={siteLogo} alt="preview" className="h-8 w-auto object-contain" />
+              <span className="text-xs text-gray-400">no admin</span>
+            </div>
+          </div>
+        )}
+      </div>
+
       {/* Modo de exibição */}
       <div className="bg-white rounded-xl border border-gray-100 p-6">
         <h2 className="font-semibold text-gray-900 mb-1">Fundo da seção Hero</h2>
