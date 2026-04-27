@@ -24,8 +24,9 @@ model Fornecedor {
   logo         String?
   banner       String?
   plano        Plano            @default(BASICO)
-  ativo        Boolean          @default(true)
-  recomendado  Boolean          @default(false)
+  ativo           Boolean          @default(true)
+  recomendado     Boolean          @default(false)
+  dashboardAtivo  Boolean          @default(false)
   categoria    Categoria        @relation(fields: [categoriaId], references: [id])
   categoriaId  String
   regioes      String[]

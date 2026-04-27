@@ -9,67 +9,105 @@ export default async function DashboardFornecedor() {
   const conta = await getContaFromSession();
   if (!conta) redirect("/fornecedor/login");
 
+  const fornecedor = conta.fornecedor;
   const fornecedorId = conta.fornecedorId;
+  const dashboardAtivo = (fornecedor as Record<string, unknown>).dashboardAtivo as boolean | undefined;
+
   const agora = new Date();
   const inicioHoje = new Date(agora.getFullYear(), agora.getMonth(), agora.getDate());
   const inicioSemana = new Date(inicioHoje);
   inicioSemana.setDate(inicioHoje.getDate() - inicioHoje.getDay());
   const inicioMes = new Date(agora.getFullYear(), agora.getMonth(), 1);
 
-  const [totalHoje, totalSemana, totalMes, porTipo, numProdutos, numPromocoes] = await Promise.all([
-    prisma.leadClick.count({ where: { fornecedorId, criadoEm: { gte: inicioHoje } } }).catch(() => 0),
-    prisma.leadClick.count({ where: { fornecedorId, criadoEm: { gte: inicioSemana } } }).catch(() => 0),
-    prisma.leadClick.count({ where: { fornecedorId, criadoEm: { gte: inicioMes } } }).catch(() => 0),
-    prisma.leadClick.groupBy({ by: ["tipo"], where: { fornecedorId }, _count: true }).catch(() => []),
+  const [numProdutos, numPromocoes] = await Promise.all([
     prisma.produto.count({ where: { fornecedorId, ativo: true } }).catch(() => 0),
     prisma.promocao.count({ where: { fornecedorId, ativo: true } }).catch(() => 0),
   ]);
 
-  const leadMap = Object.fromEntries(porTipo.map((l) => [l.tipo, l._count]));
+  // Metrics only loaded when dashboard is enabled
+  let viewsHoje = 0, viewsMes = 0, viewsTotal = 0;
+  let leadsHoje = 0, leadsSemana = 0, leadsMes = 0;
+  let leadMap: Record<string, number> = {};
 
-  const fornecedor = conta.fornecedor;
+  if (dashboardAtivo) {
+    const profilePath = `/fornecedores/${fornecedor.slug}`;
+
+    const [vh, vm, vt, lh, ls, lm, porTipo] = await Promise.all([
+      prisma.pageview.count({ where: { path: profilePath, criadoEm: { gte: inicioHoje } } }).catch(() => 0),
+      prisma.pageview.count({ where: { path: profilePath, criadoEm: { gte: inicioMes } } }).catch(() => 0),
+      prisma.pageview.count({ where: { path: profilePath } }).catch(() => 0),
+      prisma.leadClick.count({ where: { fornecedorId, criadoEm: { gte: inicioHoje } } }).catch(() => 0),
+      prisma.leadClick.count({ where: { fornecedorId, criadoEm: { gte: inicioSemana } } }).catch(() => 0),
+      prisma.leadClick.count({ where: { fornecedorId, criadoEm: { gte: inicioMes } } }).catch(() => 0),
+      prisma.leadClick.groupBy({ by: ["tipo"], where: { fornecedorId }, _count: true }).catch(() => []),
+    ]);
+
+    viewsHoje = vh; viewsMes = vm; viewsTotal = vt;
+    leadsHoje = lh; leadsSemana = ls; leadsMes = lm;
+    leadMap = Object.fromEntries(porTipo.map((l) => [l.tipo, l._count]));
+  }
 
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-gray-900">Olá, {fornecedor.nome} 👋</h1>
-        <p className="text-gray-500 text-sm mt-1">Aqui está um resumo dos seus contatos e conteúdo.</p>
+        <p className="text-gray-500 text-sm mt-1">Resumo do seu perfil na Vitrine ISP.</p>
       </div>
 
-      {/* Lead stats */}
-      <div>
-        <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">Contatos recebidos</h2>
-        <div className="grid grid-cols-3 gap-4">
-          {[
-            { label: "Hoje", value: totalHoje },
-            { label: "Esta semana", value: totalSemana },
-            { label: "Este mês", value: totalMes },
-          ].map((s) => (
-            <div key={s.label} className="bg-white rounded-xl border border-gray-100 p-5 text-center">
-              <p className="text-3xl font-bold text-[#1B3A6B]">{s.value}</p>
-              <p className="text-xs text-gray-500 mt-1">{s.label}</p>
+      {dashboardAtivo ? (
+        <>
+          {/* Visualizações de perfil */}
+          <div>
+            <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">Visualizações do perfil</h2>
+            <div className="grid grid-cols-3 gap-4">
+              {[
+                { label: "Hoje", value: viewsHoje },
+                { label: "Este mês", value: viewsMes },
+                { label: "Total", value: viewsTotal },
+              ].map((s) => (
+                <div key={s.label} className="bg-white rounded-xl border border-gray-100 p-5 text-center">
+                  <p className="text-3xl font-bold text-[#1B3A6B]">{s.value}</p>
+                  <p className="text-xs text-gray-500 mt-1">{s.label}</p>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Por canal */}
-      {totalMes > 0 && (
-        <div>
-          <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">Por canal (total)</h2>
-          <div className="grid grid-cols-3 gap-4">
-            {[
-              { tipo: "WHATSAPP", label: "WhatsApp", emoji: "💬" },
-              { tipo: "EMAIL", label: "E-mail", emoji: "✉️" },
-              { tipo: "SITE", label: "Site", emoji: "🌐" },
-            ].map((c) => (
-              <div key={c.tipo} className="bg-white rounded-xl border border-gray-100 p-4 text-center">
-                <p className="text-2xl mb-1">{c.emoji}</p>
-                <p className="text-xl font-bold text-gray-900">{leadMap[c.tipo] ?? 0}</p>
-                <p className="text-xs text-gray-500">{c.label}</p>
-              </div>
-            ))}
           </div>
+
+          {/* Cliques de contato */}
+          <div>
+            <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">Cliques de contato</h2>
+            <div className="grid grid-cols-3 gap-4 mb-4">
+              {[
+                { label: "Hoje", value: leadsHoje },
+                { label: "Esta semana", value: leadsSemana },
+                { label: "Este mês", value: leadsMes },
+              ].map((s) => (
+                <div key={s.label} className="bg-white rounded-xl border border-gray-100 p-5 text-center">
+                  <p className="text-3xl font-bold text-[#1B3A6B]">{s.value}</p>
+                  <p className="text-xs text-gray-500 mt-1">{s.label}</p>
+                </div>
+              ))}
+            </div>
+            <div className="grid grid-cols-3 gap-4">
+              {[
+                { tipo: "WHATSAPP", label: "WhatsApp", emoji: "💬", color: "text-green-700 bg-green-50" },
+                { tipo: "EMAIL",    label: "E-mail",   emoji: "✉️",  color: "text-blue-700 bg-blue-50" },
+                { tipo: "SITE",     label: "Site",     emoji: "🌐",  color: "text-purple-700 bg-purple-50" },
+              ].map((c) => (
+                <div key={c.tipo} className={`rounded-xl border border-gray-100 p-4 text-center ${c.color}`}>
+                  <p className="text-2xl mb-1">{c.emoji}</p>
+                  <p className="text-xl font-bold">{leadMap[c.tipo] ?? 0}</p>
+                  <p className="text-xs opacity-80">{c.label}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </>
+      ) : (
+        <div className="bg-white rounded-xl border border-dashed border-gray-200 p-10 text-center">
+          <p className="text-4xl mb-3">📊</p>
+          <p className="font-semibold text-gray-700 mb-1">Dashboard de métricas não disponível</p>
+          <p className="text-sm text-gray-400">Entre em contato com a INTER&apos;ISP para ativar as estatísticas do seu perfil.</p>
         </div>
       )}
 

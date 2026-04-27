@@ -16,6 +16,7 @@ type FornecedorData = {
   plano?: string;
   ativo?: boolean;
   recomendado?: boolean;
+  dashboardAtivo?: boolean;
   categoriaId?: string;
   regioes?: string[];
   whatsapp?: string | null;
@@ -75,6 +76,7 @@ export default function FornecedorForm({
       plano: getValue("plano"),
       ativo: getChecked("ativo"),
       recomendado: getChecked("recomendado"),
+      dashboardAtivo: getChecked("dashboardAtivo"),
       categoriaId: getValue("categoriaId"),
       regioes,
       whatsapp: getValue("whatsapp"),
@@ -247,7 +249,7 @@ export default function FornecedorForm({
         </div>
       </div>
 
-      <div className="flex gap-6">
+      <div className="flex flex-wrap gap-6">
         <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
           <input
             name="ativo"
@@ -265,6 +267,15 @@ export default function FornecedorForm({
             className="w-4 h-4 accent-[#2E86AB]"
           />
           Recomendado pela INTER&apos;ISP ★
+        </label>
+        <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
+          <input
+            name="dashboardAtivo"
+            type="checkbox"
+            defaultChecked={inicial?.dashboardAtivo ?? false}
+            className="w-4 h-4 accent-emerald-600"
+          />
+          Dashboard de métricas ativo 📊
         </label>
       </div>
 

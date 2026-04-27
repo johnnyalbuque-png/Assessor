@@ -47,6 +47,7 @@ export async function runMigrations() {
   await prisma.$executeRawUnsafe(`DO $$ BEGIN ALTER TABLE "Fornecedor" ADD COLUMN "tagline" TEXT; EXCEPTION WHEN duplicate_column THEN null; END $$`);
   await prisma.$executeRawUnsafe(`DO $$ BEGIN ALTER TABLE "Fornecedor" ADD COLUMN "instagram" TEXT; EXCEPTION WHEN duplicate_column THEN null; END $$`);
   await prisma.$executeRawUnsafe(`DO $$ BEGIN ALTER TABLE "Fornecedor" ADD COLUMN "linkedin" TEXT; EXCEPTION WHEN duplicate_column THEN null; END $$`);
+  await prisma.$executeRawUnsafe(`DO $$ BEGIN ALTER TABLE "Fornecedor" ADD COLUMN "dashboardAtivo" BOOLEAN NOT NULL DEFAULT false; EXCEPTION WHEN duplicate_column THEN null; END $$`);
 
   // Produto
   await prisma.$executeRawUnsafe(`
