@@ -14,6 +14,7 @@ const NAV_ITEMS = [
   { href: "/admin/analytics", label: "Analytics", icon: "📈" },
   { href: "/admin/avaliacoes", label: "Avaliações", icon: "⭐" },
   { href: "/admin/contatos", label: "Mensagens", icon: "📩" },
+  { href: "/admin/propostas", label: "Propostas", icon: "📋" },
   { href: "/admin/solicitacoes", label: "Solicitações", icon: "📬" },
   { href: "/admin/provedores", label: "Provedores", icon: "📡" },
 ];

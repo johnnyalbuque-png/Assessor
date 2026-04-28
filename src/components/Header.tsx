@@ -34,6 +34,12 @@ export default async function Header() {
                 Ver todos os fornecedores
               </Link>
               <Link
+                href="/solicitar-proposta"
+                className="hidden sm:block border border-white/40 hover:border-white px-4 py-2 rounded-lg font-medium transition-colors whitespace-nowrap"
+              >
+                Solicitar Proposta
+              </Link>
+              <Link
                 href="/cadastro"
                 className="bg-[#2E86AB] hover:bg-[#1d6a8a] px-4 py-2 rounded-lg font-medium transition-colors whitespace-nowrap"
               >
@@ -44,6 +50,12 @@ export default async function Header() {
             <>
               <Link href="/fornecedores" className="hover:text-[#2E86AB] transition-colors">
                 Fornecedores
+              </Link>
+              <Link
+                href="/solicitar-proposta"
+                className="hidden sm:block hover:text-[#2E86AB] transition-colors"
+              >
+                Solicitar Proposta
               </Link>
               <Link
                 href="/cadastro"

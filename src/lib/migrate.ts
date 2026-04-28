@@ -233,6 +233,21 @@ export async function runMigrations() {
   `);
   await prisma.$executeRawUnsafe(`DO $$ BEGIN ALTER TABLE "Fornecedor" ADD COLUMN "avaliacoesAtivo" BOOLEAN NOT NULL DEFAULT false; EXCEPTION WHEN duplicate_column THEN null; END $$`);
 
+  // SolicitacaoProposta
+  await prisma.$executeRawUnsafe(`
+    CREATE TABLE IF NOT EXISTS "SolicitacaoProposta" (
+      "id" TEXT NOT NULL, "empresa" TEXT NOT NULL, "cnpj" TEXT NOT NULL,
+      "responsavel" TEXT NOT NULL, "whatsapp" TEXT NOT NULL, "email" TEXT NOT NULL,
+      "oque" TEXT NOT NULL, "quantidade" TEXT NOT NULL,
+      "logradouro" TEXT NOT NULL, "numero" TEXT, "bairro" TEXT,
+      "cidade" TEXT NOT NULL, "estado" TEXT NOT NULL, "cep" TEXT,
+      "prazo" TEXT,
+      "criadoEm" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      CONSTRAINT "SolicitacaoProposta_pkey" PRIMARY KEY ("id")
+    )
+  `);
+  await prisma.$executeRawUnsafe(`CREATE INDEX IF NOT EXISTS "SolicitacaoProposta_estado_idx" ON "SolicitacaoProposta"("estado")`);
+
   // Evento
   await prisma.$executeRawUnsafe(`
     CREATE TABLE IF NOT EXISTS "Evento" (

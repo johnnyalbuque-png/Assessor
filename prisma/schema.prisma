@@ -195,6 +195,27 @@ model MensagemContato {
   @@index([fornecedorId, lido])
 }
 
+model SolicitacaoProposta {
+  id          String   @id @default(cuid())
+  empresa     String
+  cnpj        String
+  responsavel String
+  whatsapp    String
+  email       String
+  oque        String   @db.Text
+  quantidade  String
+  logradouro  String
+  numero      String?
+  bairro      String?
+  cidade      String
+  estado      String
+  cep         String?
+  prazo       String?
+  criadoEm   DateTime @default(now())
+
+  @@index([estado])
+}
+
 model Avaliacao {
   id           String          @id @default(cuid())
   fornecedorId String
