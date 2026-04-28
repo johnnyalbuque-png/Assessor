@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { prisma } from "@/lib/prisma";
+import { revalidatePath } from "next/cache";
 
 async function isAdmin() {
   const c = await cookies();
@@ -23,6 +24,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
         ordem: data.ordem ?? 0,
       },
     });
+    revalidatePath("/");
     return NextResponse.json(banner);
   } catch {
     return NextResponse.json({ error: "Erro ao atualizar banner" }, { status: 500 });
@@ -34,6 +36,7 @@ export async function DELETE(_: NextRequest, { params }: { params: Promise<{ id:
   try {
     const { id } = await params;
     await prisma.banner.delete({ where: { id } });
+    revalidatePath("/");
     return NextResponse.json({ ok: true });
   } catch {
     return NextResponse.json({ error: "Erro ao excluir banner" }, { status: 500 });

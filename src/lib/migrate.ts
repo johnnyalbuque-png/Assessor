@@ -5,13 +5,14 @@ export async function runMigrations() {
   for (const sql of [
     `DO $$ BEGIN CREATE TYPE "Plano" AS ENUM ('BASICO', 'DESTAQUE', 'PREMIUM'); EXCEPTION WHEN duplicate_object THEN null; END $$`,
     `DO $$ BEGIN CREATE TYPE "StatusSolicitacao" AS ENUM ('PENDENTE', 'APROVADO', 'REJEITADO'); EXCEPTION WHEN duplicate_object THEN null; END $$`,
-    `DO $$ BEGIN CREATE TYPE "TipoBanner" AS ENUM ('HORIZONTAL_TOPO', 'HORIZONTAL_RODAPE', 'VERTICAL_ESQUERDA', 'VERTICAL_DIREITA'); EXCEPTION WHEN duplicate_object THEN null; END $$`,
+    `DO $$ BEGIN CREATE TYPE "TipoBanner" AS ENUM ('HORIZONTAL_TOPO', 'HORIZONTAL_RODAPE', 'VERTICAL_ESQUERDA', 'VERTICAL_DIREITA', 'HERO'); EXCEPTION WHEN duplicate_object THEN null; END $$`,
     `DO $$ BEGIN CREATE TYPE "TipoLead" AS ENUM ('WHATSAPP', 'EMAIL', 'SITE'); EXCEPTION WHEN duplicate_object THEN null; END $$`,
   ]) {
     await prisma.$executeRawUnsafe(sql);
   }
-  // Add new enum values (safe if already exists in PG 12+)
-  await prisma.$executeRawUnsafe(`ALTER TYPE "TipoBanner" ADD VALUE IF NOT EXISTS 'HERO'`);
+  // Add HERO to existing TipoBanner enums that were created without it.
+  // ALTER TYPE ADD VALUE cannot run inside a transaction block; errors are silently ignored.
+  await prisma.$executeRawUnsafe(`ALTER TYPE "TipoBanner" ADD VALUE IF NOT EXISTS 'HERO'`).catch(() => {});
 
   // Categoria
   await prisma.$executeRawUnsafe(`

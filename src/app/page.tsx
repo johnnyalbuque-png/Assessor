@@ -11,12 +11,13 @@ type Banner = { id: string; imagem: string; link: string | null; titulo: string 
 
 async function getBanners(tipo: string): Promise<Banner[]> {
   try {
-    return await prisma.banner.findMany({
-      where: { tipo: tipo as never, ativo: true },
-      orderBy: { ordem: "asc" },
-      select: { id: true, imagem: true, link: true, titulo: true },
-    });
-  } catch {
+    const rows = await prisma.$queryRawUnsafe<Banner[]>(
+      `SELECT id, imagem, link, titulo FROM "Banner" WHERE tipo = $1 AND ativo = true ORDER BY ordem ASC`,
+      tipo
+    );
+    return rows;
+  } catch (err) {
+    console.error(`[getBanners] tipo=${tipo}`, err);
     return [];
   }
 }

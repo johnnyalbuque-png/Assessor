@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { prisma } from "@/lib/prisma";
+import { revalidatePath } from "next/cache";
 
 async function isAdmin() {
   const c = await cookies();
@@ -34,6 +35,7 @@ export async function POST(req: NextRequest) {
         ordem: data.ordem ?? 0,
       },
     });
+    revalidatePath("/");
     return NextResponse.json(banner);
   } catch (e) {
     const msg = e instanceof Error && e.message.includes("does not exist")
