@@ -8,11 +8,11 @@ export default async function Header() {
 
   return (
     <header className="bg-[#1B3A6B] text-white shadow-md">
-      <div className="max-w-6xl mx-auto px-4 h-20 flex items-center justify-between">
+      <div className="max-w-6xl mx-auto px-4 h-24 flex items-center justify-between">
         <Link href="/" className="flex items-center">
           {config.site_logo ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={config.site_logo} alt="Vitrini ISP" className="h-14 w-auto object-contain" />
+            <img src={config.site_logo} alt="Vitrini ISP" className="h-16 w-auto object-contain" />
           ) : (
             <span className="text-2xl font-bold tracking-tight">
               Vitrine<span className="text-[#2E86AB]">ISP</span>
